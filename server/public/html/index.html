@@ -1,0 +1,29 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="Pew Pew">
+  <meta name="author" content="Jon Kaplan and Tony Zhu">
+
+  <title>Miniscape</title>
+
+  <link rel="stylesheet" href="css/styles.css?v=1.0">
+
+  <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
+  <![endif]-->
+  <script src="../javascripts/pixi.min.js" defer></script>
+</head>
+
+<body>
+    <script type="text/javascript">
+        var type = "WebGL"
+        if(!PIXI.utils.isWebGLSupported()){
+            type = "canvas"
+        }
+
+        PIXI.utils.sayHello(type)
+    </script>
+</body>
+</html>
