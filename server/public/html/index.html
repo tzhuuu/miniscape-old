@@ -8,22 +8,21 @@
 
   <title>Miniscape</title>
 
-  <link rel="stylesheet" href="css/styles.css?v=1.0">
+  <style>
+    *{
+        padding: 0;
+        margin: 0;
+    }
+  </style>
 
   <!--[if lt IE 9]>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
   <![endif]-->
   <script src="../javascripts/pixi.min.js" defer></script>
+  <script src="../javascripts/main.js" defer></script>
 </head>
 
 <body>
-    <script type="text/javascript">
-        var type = "WebGL"
-        if(!PIXI.utils.isWebGLSupported()){
-            type = "canvas"
-        }
 
-        PIXI.utils.sayHello(type)
-    </script>
 </body>
 </html>
