@@ -1,0 +1,16 @@
+{
+  "name": "miniscape",
+  "description": "",
+  "main": "/server/bin/www",
+  "authors": [
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*"
+  ],
+  "dependencies": {
+    "bootstrap-sass": "^3.3.7"
+  }
+}

@@ -8,5 +8,4 @@ router.get('/', function(req, res, next) {
   return res.sendFile(filePath);
 });
 
-
 module.exports = router;
