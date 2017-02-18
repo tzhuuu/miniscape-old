@@ -6,6 +6,8 @@ var Container = PIXI.Container,
     Sprite = PIXI.Sprite,
     Graphics = PIXI.Graphics;
 
+var Map = require('../../game/maps/map.js');
+
 // globals
 var state;
 var renderer;
@@ -67,6 +69,14 @@ var initStage = function(){
   stage = new Container();
 
   // tell the `renderer` to `render` the `stage`
+
+  stage.updateLayersOrder = function () {
+    stage.children.sort(function(a,b) {
+        a.zIndex = a.zIndex || 0;
+        b.zIndex = b.zIndex || 0;
+        return b.zIndex - a.zIndex
+    });
+};
   renderer.render(stage);
 }
 
@@ -74,7 +84,10 @@ var initSprites = function(){
   // load images
   PIXI.loader
     .add([
-       "../imgs/isaac.png"
+       "../imgs/isaac.png",
+       "imgs/ground61.png",
+       "imgs/ground62.png",
+       "imgs/ground68.png",
      //  "../imgs/ .png",
      //  "../imgs/ .png"
      ])
@@ -114,10 +127,55 @@ var initSprites = function(){
     // rerender stage
     renderer.render(stage);
 
+    initMap();
     initControls();
+    stage.updateLayersOrder();
     gameLoop();
   }
 }
+
+var initMap = function() {
+
+  var map = new Map(80, 45);
+
+  map.textures = {
+    base: loader.resources['imgs/ground61.png'].texture,
+    ground: loader.resources['imgs/ground61.png'].texture,
+    wall: loader.resources['imgs/ground62.png'].texture,
+    water: loader.resources['imgs/ground68.png'].texture,
+  }
+
+  map.addToLayout('wall', 0, 0);
+  map.addToLayout('wall', 0, 0);
+  map.addToLayout('wall', 0, 0);
+  map.addToLayout('wall', 0, 0);
+
+
+  var container = new PIXI.Container();
+  container.zIndex = 10;
+  stage.addChild(container);
+
+  // for (var i = 0; i < map.size.width; i++) {
+  //   for (var j =0; j < map.size.height; j++) {
+  //     var ground = new PIXI.Sprite(map.textures.base);
+  //     ground.x = ground.width * i;
+  //     ground.y = ground.height * j;
+  //     container.addChild(ground);
+  //     // ground.parentGroup = greenGroup;
+  //   }
+  // }
+
+  // for (var i = 0; i < map.layout.length; i++) {
+  //   var t = map.layout[i];
+  //   var ground = new PIXI.Sprite(map.textures[t.name]);
+  //   ground.x = ground.width * t.x;
+  //   ground.y = ground.width * t.y;
+  //   container.addChild(ground);
+  //   console.log(ground);
+  // }
+  map.readMap('', '', map.textures, container);
+
+};
 
 // so can do presses.max() to get max in array
 Array.prototype.max = function() {
@@ -235,7 +293,7 @@ var makeProjectile = function(x, y, vx, vy){
 
 var contain = function (sprite, container) {
   var collision = undefined;
-  
+
   // left
   if (sprite.x < container.x) {
     collision = "left";
@@ -262,6 +320,9 @@ var contain = function (sprite, container) {
 
 var initControls = function(){
   var isaac = sprites['isaac'];
+
+  isaac.zOrder = -10;
+
   var w = keyboard(87),
       a = keyboard(65),
       s = keyboard(83),
@@ -270,7 +331,7 @@ var initControls = function(){
       j = keyboard(74),
       k = keyboard(75),
       l = keyboard(76);
-  var movePresses = [0, 0, 0, 0, 0]; 
+  var movePresses = [0, 0, 0, 0, 0];
   var moveDir = [0, 0];
   var facePresses = [0, 0, 0, 0, 0];
 
@@ -320,7 +381,7 @@ var initControls = function(){
     isaac.isShooting = true;
     isaac.setFaceDir(calcFaceDir(facePresses, 2));
   }
-  j.release = function(){   
+  j.release = function(){
     if (i.isUp && k.isUp && l.isUp){
       isaac.isShooting = false;
     }
@@ -339,7 +400,7 @@ var initControls = function(){
   l.press = function(){
     isaac.isShooting = true;
     isaac.setFaceDir(calcFaceDir(facePresses, 4));
-  }      
+  }
   l.release = function(){
     if (i.isUp && j.isUp && k.isUp){
       isaac.isShooting = false;
