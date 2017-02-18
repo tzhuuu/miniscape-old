@@ -7,6 +7,7 @@ var ReactDOM = require('react-dom');
 
 global.jQuery = require('jquery');
 global.$ = jQuery;
+require('./libraries/pixi.min.js');
 
 /**
  * Components
