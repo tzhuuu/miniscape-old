@@ -319,10 +319,9 @@ Character.prototype.move = function(){
   for (var i = map.wallSprites.length - 1; i >= 0; i--) {
   	var s = map.wallSprites[i];
     // var collision = ;
-    if (bump.hit(this.spriteContainer, s, false, false, true)) {
-      // this.spriteContainer.x -= this.vx;
-      // this.spriteContainer.y -= this.vy;
-      // console.log('ya');
+    if (bump.hit(this.spriteContainer, s)) {
+      this.spriteContainer.x -= this.vx;
+      this.spriteContainer.y -= this.vy;
   		return;
   	}
   }
