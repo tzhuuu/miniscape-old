@@ -3,13 +3,15 @@ var Container = PIXI.Container,
     autoDetectRenderer = PIXI.autoDetectRenderer,
     loader = PIXI.loader,
     resources = PIXI.loader.resources,
-    Sprite = PIXI.Sprite;
+    Sprite = PIXI.Sprite,
+    Graphics = PIXI.Graphics;
 
 // globals
 var state;
 var renderer;
 var stage;
 var sprites = {};
+var projectiles = [];
 
 var keyboard = function(keyCode) {
   var key = {};
@@ -88,10 +90,6 @@ var initSprites = function(){
     // set position
     isaac.position.set(0, 0);
 
-    // set rotation
-    isaac.anchor.set(0.5, 0.3);
-    isaac.rotation = 0;
-
     // set velocity
     isaac.vx = 0;
     isaac.vy = 0;
@@ -113,36 +111,126 @@ var initSprites = function(){
   }
 }
 
+// so can do presses.max() to get max in array
+Array.prototype.max = function() {
+  return Math.max.apply(null, this);
+};
+
+var calcDir = function(presses, latest, dir){
+  var key = Math.abs(latest);
+  if (latest < 0){
+    presses[key] = 0;
+  }
+  else{
+    presses[key] = presses.max() + 1;
+  }
+  if (presses.max() == 0){
+    dir[0] = 0;
+    dir[1] = 0;
+  }
+  else{
+    // 1 = up, 2 = left, 3 = down, 4 = right
+    if (presses[1] > presses[3]){
+      dir[1] = 1;
+    }
+    else if (presses[1] < presses[3]){
+      dir[1] = -1;
+    }
+    else{
+      dir[1] = 0;
+    }
+    if (presses[2] > presses[4]){
+      dir[0] = -1;
+    }
+    else if (presses[2] < presses[4]){
+      dir[0] = 1;
+    }
+    else{
+      dir[0] = 0;
+    }
+  }
+}
+
+var setVelocity = function(sprite, speed, dir){
+  sprite.vx = dir[0] * speed;
+  sprite.vy = -dir[1] * speed; // PIXI down is positive
+  if (dir[0] * dir[1] != 0){
+    sprite.vx /= Math.pow(2, 1/2);
+    sprite.vy /= Math.pow(2, 1/2);
+  }
+}
+
+var makeProjectile = function(x, y, vx, vy){
+    var circle = new Graphics();
+    circle.beginFill(0x9966FF);
+    circle.drawCircle(0, 0, 7);
+    circle.endFill();
+    circle.x = x;
+    circle.y = y;
+    circle.vx = vx;
+    circle.vy = vy;
+    projectiles.push(circle);
+    stage.addChild(circle);
+}
+
 var initControls = function(){
   var isaac = sprites['isaac'];
-  var w = keyboard(119);
-  var a = keyboard(65);
-  var s = keyboard(83);
-  var d = keyboard(68);
-  w.press = function() {
-    isaac.vy = -5;
-  };
-  w.release = function() {
-    isaac.vy = 0;
-  };
-  a.press = function() {
-    isaac.vx = -5;
-  };
-  a.release = function() {
-    isaac.vx = 0;
-  };
-  s.press = function() {
-    isaac.vy = 5;
-  };
-  s.release = function() {
-    isaac.vy = 0;
-  };
-  d.press = function() {
-    isaac.vx = 5;
-  };
-  d.release = function() {
-    isaac.vx = 0;
-  };
+  var speed = 5;
+  var w = keyboard(87),
+      a = keyboard(65),
+      s = keyboard(83),
+      d = keyboard(68),
+      i = keyboard(73),
+      j = keyboard(74),
+      k = keyboard(75),
+      l = keyboard(76);
+  var presses = [0, 0, 0, 0, 0]; 
+  var dir = [0, 0];
+
+  w.press = function(){
+    calcDir(presses, 1, dir);
+    setVelocity(isaac, speed, dir);
+  }
+  w.release = function(){
+    calcDir(presses, -1, dir);
+    setVelocity(isaac, speed, dir);
+  }
+  a.press = function(){
+    calcDir(presses, 2, dir);
+    setVelocity(isaac, speed, dir);
+  }
+  a.release = function(){
+    calcDir(presses, -2, dir);
+    setVelocity(isaac, speed, dir);
+  }
+  s.press = function(){
+    calcDir(presses, 3, dir);
+    setVelocity(isaac, speed, dir);
+  }
+  s.release = function(){
+    calcDir(presses, -3, dir);
+    setVelocity(isaac, speed, dir);
+  }
+  d.press = function(){
+    calcDir(presses, 4, dir);
+    setVelocity(isaac, speed, dir);
+  }
+  d.release = function(){
+    calcDir(presses, -4, dir);
+    setVelocity(isaac, speed, dir);
+  }
+  i.press = function(){
+    makeProjectile(isaac.x + isaac.width/2, isaac.y + isaac.height/2, isaac.vx, -speed);
+  }
+  j.press = function(){
+    makeProjectile(isaac.x + isaac.width/2, isaac.y + isaac.height/2, -speed, isaac.vy);
+  }
+  k.press = function(){
+    makeProjectile(isaac.x + isaac.width/2, isaac.y + isaac.height/2, isaac.vx, speed);
+  }
+  l.press = function(){
+    makeProjectile(isaac.x + isaac.width/2, isaac.y + isaac.height/2, speed, isaac.vy);
+  }      
 }
 
 var gameLoop = function(){
@@ -157,11 +245,23 @@ var gameLoop = function(){
 }
 
 var play = function(){
-  var isaac = sprites['isaac'];
-  // move the cat 1 pixel to the right each frame
-  isaac.x += isaac.vx;
-  isaac.y += isaac.vy;
-  isaac.rotation += 0.05;
+  for(var key in sprites){
+    if (!sprites.hasOwnProperty(key)){
+      continue
+    };
+    var sprite = sprites[key];
+    sprite.x += sprite.vx;
+    sprite.y += sprite.vy;
+  }
+  for (var i=0; i<projectiles.length; i++){
+    projectiles[i].x += projectiles[i].vx;
+    projectiles[i].y += projectiles[i].vy;
+  }
+  // var isaac = sprites['isaac'];
+  // // move the cat 1 pixel to the right each frame
+  // isaac.x += isaac.vx;
+  // isaac.y += isaac.vy;
+  //isaac.rotation += 0.05;
 }
 
 var init = function(){
