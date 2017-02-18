@@ -7,6 +7,7 @@ var MainComponent = React.createClass({
       <div>
         <p>Hello World</p>
         <p>Lol</p>
+        <p>test</p>
       </div>
     )
   }
