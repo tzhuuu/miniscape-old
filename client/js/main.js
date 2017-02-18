@@ -16,6 +16,8 @@ var stage;
 var characters = {};
 var projectiles = [];
 var bump = new Bump(PIXI);
+var playerContainer;
+var map;
 
 // aliases
 var Container = PIXI.Container,
@@ -135,18 +137,23 @@ var initStage = function(){
   renderer.render(stage);
 }
 
-var initSprites = function(){
+var initSprites = function(width, height){
   // load images
   PIXI.loader
     .add([
        "../imgs/isaac.png",
        "imgs/ground61.png",
        "imgs/ground62.png",
-       "imgs/ground68.png",
+       "imgs/ground67.png",
      //  "../imgs/ .png",
      //  "../imgs/ .png"
      ])
     .load(setup);
+
+  playerContainer = new PIXI.Container();
+  playerContainer.zIndex = 9;
+  stage.updateLayersOrder();
+  stage.addChild(playerContainer);
 
   // will run when image has loaded
   function setup() {
@@ -157,28 +164,37 @@ var initSprites = function(){
 
     characters['isaac'] = isaac;
 
+    // var scaleFactor = (height /5) / isaac.height;
+    // isaac.scale.x = scaleFactor;
+    // isaac.scale.y = scaleFactor;
+    // isaac.width = width / 15;
+    // isaac.height = height/ 15;
+
+    // add isaac to stage
+    playerContainer.addChild(isaac);
+
     // set game state
     state = play;
 
     // rerender stage
     renderer.render(stage);
 
-    initMap();
+    initMap(width, height);
     initControls();
     stage.updateLayersOrder();
     gameLoop();
   }
 }
 
-var initMap = function() {
+var initMap = function(width, height) {
 
-  var map = new Map(80, 45);
+  map = new Map(80, 45);
 
   map.textures = {
     base: loader.resources['imgs/ground61.png'].texture,
     ground: loader.resources['imgs/ground61.png'].texture,
     wall: loader.resources['imgs/ground62.png'].texture,
-    water: loader.resources['imgs/ground68.png'].texture,
+    water: loader.resources['imgs/ground67.png'].texture,
   }
 
   map.addToLayout('wall', 0, 0);
@@ -190,26 +206,7 @@ var initMap = function() {
   var container = new PIXI.Container();
   container.zIndex = 10;
   stage.addChild(container);
-
-  // for (var i = 0; i < map.size.width; i++) {
-  //   for (var j =0; j < map.size.height; j++) {
-  //     var ground = new PIXI.Sprite(map.textures.base);
-  //     ground.x = ground.width * i;
-  //     ground.y = ground.height * j;
-  //     container.addChild(ground);
-  //     // ground.parentGroup = greenGroup;
-  //   }
-  // }
-
-  // for (var i = 0; i < map.layout.length; i++) {
-  //   var t = map.layout[i];
-  //   var ground = new PIXI.Sprite(map.textures[t.name]);
-  //   ground.x = ground.width * t.x;
-  //   ground.y = ground.width * t.y;
-  //   container.addChild(ground);
-  //   console.log(ground);
-  // }
-  map.readMap('', '', map.textures, container);
+  map.readMap('', '', map.textures, container, {width: width, height: height});
 
 };
 
@@ -324,7 +321,9 @@ var makeProjectile = function(x, y, vx, vy){
     circle.vx = vx;
     circle.vy = vy;
     projectiles.push(circle);
-    stage.addChild(circle);
+    circle.zIndex = -10;
+    playerContainer.addChild(circle);
+
 }
 
 Graphics.prototype.move = function(){
@@ -471,6 +470,6 @@ var play = function(){
 
 var init = function(){
   initStage();
-  initSprites();
+  initSprites(window.innerWidth, window.innerHeight);
 }
 init();
