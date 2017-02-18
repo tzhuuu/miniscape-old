@@ -337,38 +337,52 @@ var initControls = function(){
   var moveDir = [0, 0];
   var facePresses = [0, 0, 0, 0, 0];
 
-  w.press = function(){
-    calcMoveDir(movePresses, 1, moveDir);
-    isaac.setVelocity(moveDir);
-  }
-  w.release = function(){
-    calcMoveDir(movePresses, -1, moveDir);
-    isaac.setVelocity(moveDir);
-  }
-  a.press = function(){
-    calcMoveDir(movePresses, 2, moveDir);
-    isaac.setVelocity(moveDir);
-  }
-  a.release = function(){
-    calcMoveDir(movePresses, -2, moveDir);
-    isaac.setVelocity(moveDir);
-  }
-  s.press = function(){
-    calcMoveDir(movePresses, 3, moveDir);
-    isaac.setVelocity(moveDir);
-  }
-  s.release = function(){
-    calcMoveDir(movePresses, -3, moveDir);
-    isaac.setVelocity(moveDir);
-  }
-  d.press = function(){
-    calcMoveDir(movePresses, 4, moveDir);
-    isaac.setVelocity(moveDir);
-  }
-  d.release = function(){
-    calcMoveDir(movePresses, -4, moveDir);
-    isaac.setVelocity(moveDir);
-  }
+  var movementKeys = [w, a, s, d];
+  movementKeys.map(function(k, i) {
+    k.press = function() {
+      calcMoveDir(movePresses, i + 1, moveDir);
+      isaac.setVelocity(moveDir);
+    }
+    k.release = function() {
+      calcMoveDir(movePresses, -i - 1, moveDir);
+      isaac.setVelocity(moveDir);
+    }
+  });
+
+
+
+  // w.press = function(){
+  //   calcMoveDir(movePresses, 1, moveDir);
+  //   isaac.setVelocity(moveDir);
+  // }
+  // w.release = function(){
+  //   calcMoveDir(movePresses, -1, moveDir);
+  //   isaac.setVelocity(moveDir);
+  // }
+  // a.press = function(){
+  //   calcMoveDir(movePresses, 2, moveDir);
+  //   isaac.setVelocity(moveDir);
+  // }
+  // a.release = function(){
+  //   calcMoveDir(movePresses, -2, moveDir);
+  //   isaac.setVelocity(moveDir);
+  // }
+  // s.press = function(){
+  //   calcMoveDir(movePresses, 3, moveDir);
+  //   isaac.setVelocity(moveDir);
+  // }
+  // s.release = function(){
+  //   calcMoveDir(movePresses, -3, moveDir);
+  //   isaac.setVelocity(moveDir);
+  // }
+  // d.press = function(){
+  //   calcMoveDir(movePresses, 4, moveDir);
+  //   isaac.setVelocity(moveDir);
+  // }
+  // d.release = function(){
+  //   calcMoveDir(movePresses, -4, moveDir);
+  //   isaac.setVelocity(moveDir);
+  // }
   i.press = function(){
     isaac.isShooting = true;
     isaac.setFaceDir(calcFaceDir(facePresses, 1));
