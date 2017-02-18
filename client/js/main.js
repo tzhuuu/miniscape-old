@@ -1,17 +1,29 @@
-// aliases
-var Container = PIXI.Container,
-    autoDetectRenderer = PIXI.autoDetectRenderer,
-    loader = PIXI.loader,
-    resources = PIXI.loader.resources,
-    Sprite = PIXI.Sprite,
-    Graphics = PIXI.Graphics;
-
 // globals
 var state;
 var renderer;
 var stage;
 var sprites = {};
 var projectiles = [];
+var bump = new Bump(PIXI);
+var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+function preload() {
+}
+
+function create() {
+}
+
+function update() {
+}
+
+// aliases
+var Container = PIXI.Container,
+    autoDetectRenderer = PIXI.autoDetectRenderer,
+    loader = PIXI.loader,
+    resources = PIXI.loader.resources,
+    Sprite = PIXI.Sprite,
+    Graphics = PIXI.Graphics,
+    scalesMode = PIXI.scalesMode;
 
 var keyboard = function(keyCode) {
   var key = {};
@@ -220,6 +232,22 @@ Sprite.prototype.move = function(){
     this.y += this.vy;
 }
 
+// var Bullet = function (game, key) {
+
+//     Phaser.Sprite.call(this, game, 0, 0, key);
+
+//     this.texture.baseTexture.scaleMode = scaleModes.NEAREST;
+
+//     this.anchor.set(0.5);
+
+//     this.checkWorldBounds = true;
+//     this.outOfBoundsKill = true;
+//     this.exists = false;
+
+//     this.tracking = false;
+//     this.scaleSpeed = 0;
+// };
+
 var makeProjectile = function(x, y, vx, vy){
     var circle = new Graphics();
     circle.beginFill(0x9966FF);
@@ -233,34 +261,13 @@ var makeProjectile = function(x, y, vx, vy){
     stage.addChild(circle);
 }
 
-var contain = function (sprite, container) {
-  var collision = undefined;
-  
-  // left
-  if (sprite.x < container.x) {
-    collision = "left";
-  }
-
-  // top
-  if (sprite.y < container.y) {
-    collision = "top";
-  }
-
-  // right
-  if (sprite.x + sprite.width > container.width) {
-    collision = "right";
-  }
-
-  // bottom
-  if (sprite.y + sprite.height > container.height) {
-    collision = "bottom";
-  }
-
-  // return the `collision` value
-  return collision;
+Graphics.prototype.move = function(){
+    this.x += this.vx;
+    this.y += this.vy;
 }
 
 var initControls = function(){
+  console.log(stage);
   var isaac = sprites['isaac'];
   var w = keyboard(87),
       a = keyboard(65),
@@ -360,6 +367,7 @@ var gameLoop = function(){
 }
 
 var play = function(){
+  // move sprites
   for(var key in sprites){
     if (!sprites.hasOwnProperty(key)){
       continue
@@ -370,12 +378,24 @@ var play = function(){
       sprite.shoot();
     }
   }
+  // move projectiles
+  //console.log(projectiles.length);
+  var out = [];
   for (var i=0; i<projectiles.length; i++){
-    projectiles[i].x += projectiles[i].vx;
-    projectiles[i].y += projectiles[i].vy;
-    // if(contain(projectiles[i], stage)){
-    //   projectiles.splice(i, 1);
-    // }
+    projectiles[i].move();
+    // check collision
+    var collision = bump.contain(projectiles[i], {x: -25, y: -25, width: window.innerWidth + 50, height: window.innerHeight + 50});
+    if (collision){
+      out.push(i);
+    }
+  }
+  // remove projectiles that are past bounds
+  out.sort(function(a,b){ return b - a; });
+  if (out.length)
+  for (var i=out.length-1; i>=0; i--){
+    //var projectile = projectiles[out[i]];
+    projectiles.splice(out[i], 1);
+    //stage.removeChild(projectile);
   }
 }
 
