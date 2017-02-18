@@ -448,14 +448,27 @@ var play = function(){
       out.push(i);
     }
   }
-  // remove projectiles that are past bounds
-  out.sort(function(a,b){ return b - a; });
-  if (out.length)
-  for (var i=out.length-1; i>=0; i--){
-    //var projectile = projectiles[out[i]];
-    projectiles.splice(out[i], 1);
-    //stage.removeChild(projectile);
+
+  for (var i = 0; i < out.length; i++) {
+    projectiles[out[i]] = null;
   }
+
+  var j = 0;
+  for (var i = 0; i < projectiles.length; i++) {
+    if (projectiles[i]) {
+      projectiles[j] = projectiles[i];
+      j++;
+    }
+  }
+  projectiles.splice(j, projectiles.length - j);
+  // // remove projectiles that are past bounds
+  // out.sort(function(a,b){ return b - a; });
+  // if (out.length)
+  // for (var i=out.length-1; i>=0; i--){
+  //   //var projectile = projectiles[out[i]];
+  //   // projectiles.splice(out[i], 1);
+  //   //stage.removeChild(projectile);
+  // }
 }
 
 var init = function(){
