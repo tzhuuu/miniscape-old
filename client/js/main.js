@@ -4,7 +4,8 @@ var Container = PIXI.Container,
     loader = PIXI.loader,
     resources = PIXI.loader.resources,
     Sprite = PIXI.Sprite,
-    Graphics = PIXI.Graphics;
+    Graphics = PIXI.Graphics,
+    Container = PIXI.Container;
 
 var Map = require('../../game/maps/map.js');
 
@@ -12,7 +13,7 @@ var Map = require('../../game/maps/map.js');
 var state;
 var renderer;
 var stage;
-var sprites = {};
+var characters = {};
 var projectiles = [];
 var bump = new Bump(PIXI);
 var playerContainer;
@@ -25,6 +26,60 @@ var Container = PIXI.Container,
     resources = PIXI.loader.resources,
     Sprite = PIXI.Sprite,
     Graphics = PIXI.Graphics;
+
+var Character = function(sprite, name, x, y, speed,
+                         faceDir, shotSpeed, bulletSpeed){
+
+  this.sprite = sprite;
+  this.name = name;
+  
+  this.spriteContainer = new Container();
+  this.spriteContainer.x = x;
+  this.spriteContainer.y = y;
+  this.spriteContainer.addChild(this.sprite);
+
+  // set shooting info
+  this.isShooting = false;
+  this.faceDir = faceDir;
+  this.shotSpeed = shotSpeed;
+  this.bulletSpeed = bulletSpeed;
+  this.lastShot = Date.now();
+
+  // set velocity
+  this.speed = speed;
+  this.vx = 0;
+  this.vy = 0;
+
+  // create the health bar
+  var healthBar = new PIXI.DisplayObjectContainer();
+  this.healthBar = healthBar;
+  healthBar.position.set(sprite.x, sprite.y)
+
+  // create the black background rectangle
+  var innerBar = new PIXI.Graphics();
+  innerBar.beginFill(0x000000);
+  innerBar.drawRect(sprite.x + sprite.width/4, sprite.y + sprite.height/6, sprite.width/2, 6);
+  innerBar.endFill();
+  healthBar.addChild(innerBar);
+
+  // create the front red rectangle
+  var outerBar = new PIXI.Graphics();
+  this.outerBar = outerBar;
+  outerBar.beginFill(0xFF3300);
+  outerBar.drawRect(sprite.x + sprite.width/4, sprite.y + sprite.height/6, sprite.width/2, 6);
+  outerBar.endFill();
+  healthBar.addChild(outerBar);
+
+  healthBar.outer = outerBar;
+  
+  this.spriteContainer.addChild(healthBar);
+  playerContainer.addChild(this.spriteContainer);
+}
+
+var Projectile = function(graphic, from){
+  this.graphic = graphic;
+  this.from = from;
+}
 
 var keyboard = function(keyCode) {
   var key = {};
@@ -87,7 +142,7 @@ var initStage = function(){
         b.zIndex = b.zIndex || 0;
         return b.zIndex - a.zIndex
     });
-};
+  };
   renderer.render(stage);
 }
 
@@ -96,6 +151,7 @@ var initSprites = function(width, height){
   PIXI.loader
     .add([
        "../imgs/isaac.png",
+       "../imgs/krampus.png",
        "imgs/ground61.png",
        "imgs/ground62.png",
        "imgs/ground67.png",
@@ -112,37 +168,25 @@ var initSprites = function(width, height){
   // will run when image has loaded
   function setup() {
     // create isaac sprite from texture
-    var isaac = new Sprite(
+    var isaac = new Character(new Sprite(
       loader.resources["../imgs/isaac.png"].texture
-    );
+    ), 'isaac', window.innerWidth/2, window.innerHeight/2, 5, 'down', 200, 7.5);
 
-    // set position
-    isaac.position.set(0, 0);
+    var krampus = new Character(new Sprite(
+      loader.resources["../imgs/krampus.png"].texture
+    ), 'krampus', window.innerWidth/2, 0, 0, 'down', 300, 4);
 
-    // set shooting info
-    isaac.isShooting = false;
-    isaac.faceDir = 'down';
-    isaac.shotSpeed = 100;
-    isaac.bulletSpeed = 7.5;
-    isaac.lastShot = Date.now();
+    characters['isaac'] = isaac;
+    characters['krampus'] = krampus;
 
-    // set velocity
-    isaac.speed = 5;
-    isaac.vx = 0;
-    isaac.vy = 0;
-
-
-    var scaleFactor = (height /5) / isaac.height;
-    isaac.scale.x = scaleFactor;
-    isaac.scale.y = scaleFactor;
+    // var scaleFactor = (height /5) / isaac.height;
+    // isaac.scale.x = scaleFactor;
+    // isaac.scale.y = scaleFactor;
     // isaac.width = width / 15;
     // isaac.height = height/ 15;
 
     // add isaac to stage
-    playerContainer.addChild(isaac);
-
-    // add to list of sprites
-    sprites['isaac'] = isaac;
+    //playerContainer.addChild(isaac);
 
     // set game state
     state = play;
@@ -221,7 +265,7 @@ var calcMoveDir = function(presses, latest, dir){
   }
 }
 
-Sprite.prototype.setVelocity = function(dir){
+Character.prototype.setVelocity = function(dir){
   this.vx = dir[0] * this.speed;
   this.vy = -dir[1] * this.speed; // PIXI down is positive
   if (dir[0] * dir[1] != 0){
@@ -244,7 +288,7 @@ var calcFaceDir = function(presses, latest){
   return dir;
 }
 
-Sprite.prototype.setFaceDir = function(dir){
+Character.prototype.setFaceDir = function(dir){
   if (dir == 1){
     this.faceDir = 'up';
   }
@@ -259,46 +303,34 @@ Sprite.prototype.setFaceDir = function(dir){
   }
 }
 
-Sprite.prototype.shoot = function(){
+Character.prototype.shoot = function(){
   if (Date.now() - this.lastShot > this.shotSpeed){
     this.lastShot = Date.now();
     if (this.faceDir == 'up'){
-      makeProjectile(this.x + this.width/2, this.y + this.height/2, this.vx, -this.bulletSpeed);
+      makeProjectile(this.spriteContainer.x + this.spriteContainer.width/2, this.spriteContainer.y + this.spriteContainer.height/2, this.vx, -this.bulletSpeed, this.name);
     }
     else if (this.faceDir == 'left'){
-      makeProjectile(this.x + this.width/2, this.y + this.height/2, -this.bulletSpeed, this.vy);
+      makeProjectile(this.spriteContainer.x + this.spriteContainer.width/2, this.spriteContainer.y + this.spriteContainer.height/2, -this.bulletSpeed, this.vy, this.name);
     }
     else if (this.faceDir == 'down'){
-      makeProjectile(this.x + this.width/2, this.y + this.height/2, this.vx, this.bulletSpeed);
+      makeProjectile(this.spriteContainer.x + this.spriteContainer.width/2, this.spriteContainer.y + this.spriteContainer.height/2, this.vx, this.bulletSpeed, this.name);
     }
     else{
-      makeProjectile(this.x + this.width/2, this.y + this.height/2, this.bulletSpeed, this.vy);
+      makeProjectile(this.spriteContainer.x + this.spriteContainer.width/2, this.spriteContainer.y + this.spriteContainer.height/2, this.bulletSpeed, this.vy, this.name);
     }
   }
 }
 
-Sprite.prototype.move = function(){
-    this.x += this.vx;
-    this.y += this.vy;
+Character.prototype.move = function(){
+  this.spriteContainer.x += this.vx;
+  this.spriteContainer.y += this.vy;
 }
 
-// var Bullet = function (game, key) {
+Character.prototype.takeDamage = function(){
+  this.healthBar.outer.width /= 2;
+}
 
-//     Phaser.Sprite.call(this, game, 0, 0, key);
-
-//     this.texture.baseTexture.scaleMode = scaleModes.NEAREST;
-
-//     this.anchor.set(0.5);
-
-//     this.checkWorldBounds = true;
-//     this.outOfBoundsKill = true;
-//     this.exists = false;
-
-//     this.tracking = false;
-//     this.scaleSpeed = 0;
-// };
-
-var makeProjectile = function(x, y, vx, vy){
+var makeProjectile = function(x, y, vx, vy, from){
     var circle = new Graphics();
     circle.beginFill(0x9966FF);
     circle.drawCircle(0, 0, 7);
@@ -307,21 +339,19 @@ var makeProjectile = function(x, y, vx, vy){
     circle.y = y;
     circle.vx = vx;
     circle.vy = vy;
-    projectiles.push(circle);
+    var projectile = new Projectile(circle, from);
+    projectiles.push(projectile);
     circle.zIndex = -10;
     playerContainer.addChild(circle);
-
 }
 
-
-Graphics.prototype.move = function(){
-    this.x += this.vx;
-    this.y += this.vy;
+Projectile.prototype.move = function(){
+    this.graphic.x += this.graphic.vx;
+    this.graphic.y += this.graphic.vy;
 }
 
 var initControls = function(){
-  console.log(stage);
-  var isaac = sprites['isaac'];
+  var isaac = characters['isaac'];
 
   isaac.zOrder = -10;
 
@@ -438,32 +468,42 @@ var gameLoop = function(){
 
 var play = function(){
   // move sprites
-  for(var key in sprites){
-    if (!sprites.hasOwnProperty(key)){
+  for(var key in characters){
+    if (!characters.hasOwnProperty(key)){
       continue
     };
-    var sprite = sprites[key];
-    sprite.move();
-    if (sprite.isShooting){
-      sprite.shoot();
+    var character = characters[key];
+    character.move();
+    if (character.isShooting){
+      character.shoot();
     }
   }
   // move projectiles
-  //console.log(projectiles.length);
   var out = [];
   for (var i=0; i<projectiles.length; i++){
     projectiles[i].move();
     // check collision
-    var collision = bump.contain(projectiles[i], {x: -25, y: -25, width: window.innerWidth + 50, height: window.innerHeight + 50});
-    if (collision){
+    var boundsCollision = bump.contain(projectiles[i].graphic, {x: -25, y: -25, width: window.innerWidth + 50, height: window.innerHeight + 50});
+    if (boundsCollision){
       out.push(i);
     }
+    for (var key in characters){
+      if (!characters.hasOwnProperty(key)){
+        continue;
+      }
+      if (projectiles[i].from == character.name){
+        continue;
+      }
+      var character = characters[key];
+      var charCollision = bump.hitTestCircleRectangle(projectiles[i].graphic, character.spriteContainer);
+      if (charCollision){
+        character.takeDamage();
+      }
+    }
   }
-
   for (var i = 0; i < out.length; i++) {
     projectiles[out[i]] = null;
   }
-
   var j = 0;
   for (var i = 0; i < projectiles.length; i++) {
     if (projectiles[i]) {
@@ -472,14 +512,6 @@ var play = function(){
     }
   }
   projectiles.splice(j, projectiles.length - j);
-  // // remove projectiles that are past bounds
-  // out.sort(function(a,b){ return b - a; });
-  // if (out.length)
-  // for (var i=out.length-1; i>=0; i--){
-  //   //var projectile = projectiles[out[i]];
-  //   // projectiles.splice(out[i], 1);
-  //   //stage.removeChild(projectile);
-  // }
 }
 
 var init = function(){
