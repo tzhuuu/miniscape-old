@@ -28,7 +28,7 @@ var Container = PIXI.Container,
     Graphics = PIXI.Graphics;
 
 var Character = function(sprite, name, x, y, speed,
-                         faceDir, shotSpeed, bulletSpeed){
+                         faceDir, shotSpeed, bulletSpeed, isShooting = false){
 
   this.sprite = sprite;
   this.name = name;
@@ -39,7 +39,7 @@ var Character = function(sprite, name, x, y, speed,
   this.spriteContainer.addChild(this.sprite);
 
   // set shooting info
-  this.isShooting = false;
+  this.isShooting = isShooting;
   this.faceDir = faceDir;
   this.shotSpeed = shotSpeed;
   this.bulletSpeed = bulletSpeed;
@@ -57,6 +57,7 @@ var Character = function(sprite, name, x, y, speed,
 
   // create the black background rectangle
   var innerBar = new PIXI.Graphics();
+  this.innerBar = innerBar;
   innerBar.beginFill(0x000000);
   innerBar.drawRect(sprite.x + sprite.width/4, sprite.y + sprite.height/6, sprite.width/2, 6);
   innerBar.endFill();
@@ -79,6 +80,7 @@ var Character = function(sprite, name, x, y, speed,
 var Projectile = function(graphic, from){
   this.graphic = graphic;
   this.from = from;
+  this.hit = [];
 }
 
 var keyboard = function(keyCode) {
@@ -174,7 +176,7 @@ var initSprites = function(width, height){
 
     var krampus = new Character(new Sprite(
       loader.resources["../imgs/krampus.png"].texture
-    ), 'krampus', window.innerWidth/2, 0, 0, 'down', 300, 4);
+    ), 'krampus', window.innerWidth/2, 0, 0, 'down', 300, 4, true);
 
     characters['isaac'] = isaac;
     characters['krampus'] = krampus;
@@ -327,7 +329,16 @@ Character.prototype.move = function(){
 }
 
 Character.prototype.takeDamage = function(){
-  this.healthBar.outer.width /= 2;
+  this.healthBar.outer.width -= 5;
+  this.healthBar.outer.x += 2.5;
+  if (this.healthBar.outer.width < 0) {
+    this.die();
+  }
+}
+
+Character.prototype.die = function(){
+  delete characters[this.name];
+  playerContainer.removeChild(this.spriteContainer);
 }
 
 var makeProjectile = function(x, y, vx, vy, from){
@@ -507,12 +518,13 @@ var play = function(){
       if (!characters.hasOwnProperty(key)){
         continue;
       }
-      if (projectiles[i].from == character.name){
+      if (projectiles[i].from === key || projectiles[i].hit.indexOf(key) != -1){
         continue;
       }
       var character = characters[key];
       var charCollision = bump.hitTestCircleRectangle(projectiles[i].graphic, character.spriteContainer);
       if (charCollision){
+        projectiles[i].hit.push(key);
         character.takeDamage();
       }
     }
