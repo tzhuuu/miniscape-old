@@ -5,10 +5,48 @@ var Container = PIXI.Container,
     resources = PIXI.loader.resources,
     Sprite = PIXI.Sprite;
 
-// globals for rendering
+// globals
+var state;
 var renderer;
 var stage;
 var sprites = {};
+
+var keyboard = function(keyCode) {
+  var key = {};
+  key.code = keyCode;
+  key.isDown = false;
+  key.isUp = true;
+  key.press = undefined;
+  key.release = undefined;
+  // the `downHandler`
+  key.downHandler = function(event) {
+    if (event.keyCode === key.code) {
+      if (key.isUp && key.press) key.press();
+      key.isDown = true;
+      key.isUp = false;
+    }
+    event.preventDefault();
+  };
+
+  // the `upHandler`
+  key.upHandler = function(event) {
+    if (event.keyCode === key.code) {
+      if (key.isDown && key.release) key.release();
+      key.isDown = false;
+      key.isUp = true;
+    }
+    event.preventDefault();
+  };
+
+  // attach event listeners
+  window.addEventListener(
+    "keydown", key.downHandler.bind(key), false
+  );
+  window.addEventListener(
+    "keyup", key.upHandler.bind(key), false
+  );
+  return key;
+}
 
 var initStage = function(){
   // create the renderer
@@ -47,12 +85,16 @@ var initSprites = function(){
       loader.resources["../img/isaac.png"].texture
     );
 
-    // move top left of isaac to (96, 96)
-    isaac.position.set(96, 96);
+    // set position
+    isaac.position.set(0, 0);
 
-    // set rotation anchor to center of isaac
+    // set rotation
     isaac.anchor.set(0.5, 0.3);
     isaac.rotation = 0;
+
+    // set velocity
+    isaac.vx = 0;
+    isaac.vy = 0;
 
     // add isaac to stage
     stage.addChild(isaac);
@@ -60,25 +102,49 @@ var initSprites = function(){
     // add to list of sprites
     sprites['isaac'] = isaac;
 
+    // set game state
+    state = play;
+
     // rerender stage
     renderer.render(stage);
   }
+}
+
+var initControls = function(){
+  var isaac = sprites['isaac'];
+  var s = keyboard(83);
+  s.press = function() {
+    isaac.vy = -5;
+  };
+  s.release = function() {
+    isaac.vx = 5;
+  };
+  var d = keyboard(68);
 }
 
 var gameLoop = function(){
   // loop this function at 60 frames per second
   requestAnimationFrame(gameLoop);
 
-  // move the cat 1 pixel to the right each frame
-  sprites['isaac'].rotation += 0.05;
+  // update current game state
+  state();
 
   // render the stage to see the animation
   renderer.render(stage);
 }
 
+var play = function(){
+  var isaac = sprites['isaac'];
+  // move the cat 1 pixel to the right each frame
+  isaac.x += isaac.vx;
+  isaac.y += isaac.vy;
+  isaac.rotation += 0.05;
+}
+
 var init = function(){
   initStage();
   initSprites();
+  initControls();
   gameLoop();
 }
 init();
