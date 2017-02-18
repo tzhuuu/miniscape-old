@@ -32,7 +32,7 @@ var Character = function(sprite, name, x, y, speed,
 
   this.sprite = sprite;
   this.name = name;
-  
+
   this.spriteContainer = new Container();
   this.spriteContainer.x = x;
   this.spriteContainer.y = y;
@@ -71,7 +71,7 @@ var Character = function(sprite, name, x, y, speed,
   healthBar.addChild(outerBar);
 
   healthBar.outer = outerBar;
-  
+
   this.spriteContainer.addChild(healthBar);
   playerContainer.addChild(this.spriteContainer);
 }
@@ -212,12 +212,6 @@ var initMap = function(width, height) {
     water: loader.resources['imgs/ground67.png'].texture,
   }
 
-  map.addToLayout('wall', 0, 0);
-  map.addToLayout('wall', 0, 0);
-  map.addToLayout('wall', 0, 0);
-  map.addToLayout('wall', 0, 0);
-
-
   var container = new PIXI.Container();
   container.zIndex = 10;
   stage.addChild(container);
@@ -289,18 +283,13 @@ var calcFaceDir = function(presses, latest){
 }
 
 Character.prototype.setFaceDir = function(dir){
-  if (dir == 1){
-    this.faceDir = 'up';
+  var faceDir = {
+    1: 'up',
+    2: 'left',
+    3: 'down',
+    4: 'right'
   }
-  else if (dir == 2){
-    this.faceDir = 'left';
-  }
-  else if (dir == 3){
-    this.faceDir = 'down';
-  }
-  else if (dir == 4){
-    this.faceDir = 'right';
-  }
+  this.faceDir = faceDir[dir];
 }
 
 Character.prototype.shoot = function(){
@@ -324,6 +313,17 @@ Character.prototype.shoot = function(){
 Character.prototype.move = function(){
   this.spriteContainer.x += this.vx;
   this.spriteContainer.y += this.vy;
+
+  for (var i = map.wallSprites.length - 1; i >= 0; i--) {
+  	var s = map.wallSprites[i];
+    // var collision = ;
+    if (bump.hit(this.spriteContainer, s, false, false, true)) {
+      // this.spriteContainer.x -= this.vx;
+      // this.spriteContainer.y -= this.vy;
+      // console.log('ya');
+  		return;
+  	}
+  }
 }
 
 Character.prototype.takeDamage = function(){
@@ -413,46 +413,62 @@ var initControls = function(){
   //   calcMoveDir(movePresses, -4, moveDir);
   //   isaac.setVelocity(moveDir);
   // }
-  i.press = function(){
-    isaac.isShooting = true;
-    isaac.setFaceDir(calcFaceDir(facePresses, 1));
-  }
-  i.release = function(){
-    if (j.isUp && k.isUp && l.isUp){
-      isaac.isShooting = false;
+
+  var shootKeys = [i, j, k, l];
+  shootKeys.map(function(key, index) {
+    key.press = function() {
+      isaac.isShooting = true;
+      isaac.setFaceDir(calcFaceDir(facePresses, index + 1));
     }
-    isaac.setFaceDir(calcFaceDir(facePresses, -1));
-  }
-  j.press = function(){
-    isaac.isShooting = true;
-    isaac.setFaceDir(calcFaceDir(facePresses, 2));
-  }
-  j.release = function(){
-    if (i.isUp && k.isUp && l.isUp){
-      isaac.isShooting = false;
+    key.release = function() {
+      key.isUp = true;
+      if (i.isUp && j.isUp && k.isUp && l.isUp) {
+        isaac.isShooting = false;
+      }
+      isaac.setFaceDir(calcFaceDir(facePresses, -index - 1));
     }
-    isaac.setFaceDir(calcFaceDir(facePresses, -2));
-  }
-  k.press = function(){
-    isaac.isShooting = true;
-    isaac.setFaceDir(calcFaceDir(facePresses, 3));
-  }
-  k.release = function(){
-    if (i.isUp && j.isUp && l.isUp){
-      isaac.isShooting = false;
-    }
-    isaac.setFaceDir(calcFaceDir(facePresses, -3));
-  }
-  l.press = function(){
-    isaac.isShooting = true;
-    isaac.setFaceDir(calcFaceDir(facePresses, 4));
-  }
-  l.release = function(){
-    if (i.isUp && j.isUp && k.isUp){
-      isaac.isShooting = false;
-    }
-    isaac.setFaceDir(calcFaceDir(facePresses, -4));
-  }
+  });
+  // });
+  // i.press = function(){
+  //   isaac.isShooting = true;
+  //   isaac.setFaceDir(calcFaceDir(facePresses, 1));
+  // }
+  // i.release = function(){
+  //   if (j.isUp && k.isUp && l.isUp){
+  //     isaac.isShooting = false;
+  //   }
+  //   isaac.setFaceDir(calcFaceDir(facePresses, -1));
+  // }
+  // j.press = function(){
+  //   isaac.isShooting = true;
+  //   isaac.setFaceDir(calcFaceDir(facePresses, 2));
+  // }
+  // j.release = function(){
+  //   if (i.isUp && k.isUp && l.isUp){
+  //     isaac.isShooting = false;
+  //   }
+  //   isaac.setFaceDir(calcFaceDir(facePresses, -2));
+  // }
+  // k.press = function(){
+  //   isaac.isShooting = true;
+  //   isaac.setFaceDir(calcFaceDir(facePresses, 3));
+  // }
+  // k.release = function(){
+  //   if (i.isUp && j.isUp && l.isUp){
+  //     isaac.isShooting = false;
+  //   }
+  //   isaac.setFaceDir(calcFaceDir(facePresses, -3));
+  // }
+  // l.press = function(){
+  //   isaac.isShooting = true;
+  //   isaac.setFaceDir(calcFaceDir(facePresses, 4));
+  // }
+  // l.release = function(){
+  //   if (i.isUp && j.isUp && k.isUp){
+  //     isaac.isShooting = false;
+  //   }
+  //   isaac.setFaceDir(calcFaceDir(facePresses, -4));
+  // }
 }
 
 var gameLoop = function(){

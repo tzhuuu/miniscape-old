@@ -22,28 +22,28 @@ Map.prototype.addToLayout = function(textureName, x, y) {
 
 Map.prototype.readMap = function(mapString, key, textures, container, screenSize) {
   mapString = [
-    "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    "X      C                               X",
-    "X         C                            X",
-    "X         C                            X",
-    "X           C                          X",
-    "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    "X           C                          X",
-    "X           C                          X",
-    "X           C                          X",
-    "X           C                          X",
-    "X           C                          X",
-    "X           C                          X",
-    "X           C                          X",
-    "X           C                          X",
-    "X           C                          X",
-    "X           C                          X",
-    "X           C                          X",
-    "X           C                          X",
-    "X           C                          X",
-    "X           C                          X",
-    "X           C                          X",
-    "X           C                          X",
+    "            XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "X                                      X",
     "X           C                          X"
   ];
 
@@ -74,7 +74,9 @@ Map.prototype.readMap = function(mapString, key, textures, container, screenSize
           ground.height = ground.height * scaleY;
           ground.x = ground.width * j;
           ground.y = ground.height * i;
-          this.wallSprites.push(ground);
+          if (c == 'X') {
+            this.wallSprites.push(ground);
+          }
           container.addChild(ground);
 
           break;
