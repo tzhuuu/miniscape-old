@@ -81,7 +81,7 @@ gulp.task('compile-img', function(done) {
   console.log("Compiling images...")
   var deferred = when.defer();
   gulp.src(config.images.src)
-    .pipe(minifyImg())
+    // .pipe(minifyImg())
     .pipe(gulp.dest(config.images.out))
     .on('end', function() {
       deferred.resolve();
