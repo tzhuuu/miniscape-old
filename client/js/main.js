@@ -12,7 +12,6 @@ var renderer;
 var stage;
 var sprites = {};
 var projectiles = [];
-var speed = 5;
 
 var keyboard = function(keyCode) {
   var key = {};
@@ -91,12 +90,15 @@ var initSprites = function(){
     // set position
     isaac.position.set(0, 0);
 
-    isaac.direction = 'down';
+    // set shooting info
     isaac.isShooting = false;
-    isaac.shotSpeed = 200;
+    isaac.faceDir = 'down';
+    isaac.shotSpeed = 100;
+    isaac.bulletSpeed = 7.5;
     isaac.lastShot = Date.now();
 
     // set velocity
+    isaac.speed = 5;
     isaac.vx = 0;
     isaac.vy = 0;
 
@@ -122,7 +124,7 @@ Array.prototype.max = function() {
   return Math.max.apply(null, this);
 };
 
-var calcDir = function(presses, latest, dir){
+var calcMoveDir = function(presses, latest, dir){
   var key = Math.abs(latest);
   if (latest < 0){
     presses[key] = 0;
@@ -157,13 +159,65 @@ var calcDir = function(presses, latest, dir){
   }
 }
 
-var setVelocity = function(sprite, speed, dir){
-  sprite.vx = dir[0] * speed;
-  sprite.vy = -dir[1] * speed; // PIXI down is positive
+Sprite.prototype.setVelocity = function(dir){
+  this.vx = dir[0] * this.speed;
+  this.vy = -dir[1] * this.speed; // PIXI down is positive
   if (dir[0] * dir[1] != 0){
-    sprite.vx /= Math.pow(2, 1/2);
-    sprite.vy /= Math.pow(2, 1/2);
+    this.vx /= Math.pow(2, 1/2);
+    this.vy /= Math.pow(2, 1/2);
   }
+}
+
+var calcFaceDir = function(presses, latest){
+  var dir;
+  var key = Math.abs(latest);
+  if (latest < 0){
+    presses[key] = 0;
+    dir = presses.indexOf(presses.max());
+  }
+  else{
+    presses[key] = presses.max() + 1;
+    dir = key;
+  }
+  return dir;
+}
+
+Sprite.prototype.setFaceDir = function(dir){
+  if (dir == 1){
+    this.faceDir = 'up';
+  }
+  else if (dir == 2){
+    this.faceDir = 'left';
+  }
+  else if (dir == 3){
+    this.faceDir = 'down';
+  }
+  else if (dir == 4){
+    this.faceDir = 'right';
+  }
+}
+
+Sprite.prototype.shoot = function(){
+  if (Date.now() - this.lastShot > this.shotSpeed){
+    this.lastShot = Date.now();
+    if (this.faceDir == 'up'){
+      makeProjectile(this.x + this.width/2, this.y + this.height/2, this.vx, -this.bulletSpeed);
+    }
+    else if (this.faceDir == 'left'){
+      makeProjectile(this.x + this.width/2, this.y + this.height/2, -this.bulletSpeed, this.vy);
+    }
+    else if (this.faceDir == 'down'){
+      makeProjectile(this.x + this.width/2, this.y + this.height/2, this.vx, this.bulletSpeed);
+    }
+    else{
+      makeProjectile(this.x + this.width/2, this.y + this.height/2, this.bulletSpeed, this.vy);
+    }
+  }
+}
+
+Sprite.prototype.move = function(){
+    this.x += this.vx;
+    this.y += this.vy;
 }
 
 var makeProjectile = function(x, y, vx, vy){
@@ -208,7 +262,6 @@ var contain = function (sprite, container) {
 
 var initControls = function(){
   var isaac = sprites['isaac'];
-  speed = 5;
   var w = keyboard(87),
       a = keyboard(65),
       s = keyboard(83),
@@ -217,57 +270,82 @@ var initControls = function(){
       j = keyboard(74),
       k = keyboard(75),
       l = keyboard(76);
-  var presses = [0, 0, 0, 0, 0]; 
-  var dir = [0, 0];
+  var movePresses = [0, 0, 0, 0, 0]; 
+  var moveDir = [0, 0];
+  var facePresses = [0, 0, 0, 0, 0];
 
   w.press = function(){
-    calcDir(presses, 1, dir);
-    setVelocity(isaac, speed, dir);
+    calcMoveDir(movePresses, 1, moveDir);
+    isaac.setVelocity(moveDir);
   }
   w.release = function(){
-    calcDir(presses, -1, dir);
-    setVelocity(isaac, speed, dir);
+    calcMoveDir(movePresses, -1, moveDir);
+    isaac.setVelocity(moveDir);
   }
   a.press = function(){
-    calcDir(presses, 2, dir);
-    setVelocity(isaac, speed, dir);
+    calcMoveDir(movePresses, 2, moveDir);
+    isaac.setVelocity(moveDir);
   }
   a.release = function(){
-    calcDir(presses, -2, dir);
-    setVelocity(isaac, speed, dir);
+    calcMoveDir(movePresses, -2, moveDir);
+    isaac.setVelocity(moveDir);
   }
   s.press = function(){
-    calcDir(presses, 3, dir);
-    setVelocity(isaac, speed, dir);
+    calcMoveDir(movePresses, 3, moveDir);
+    isaac.setVelocity(moveDir);
   }
   s.release = function(){
-    calcDir(presses, -3, dir);
-    setVelocity(isaac, speed, dir);
+    calcMoveDir(movePresses, -3, moveDir);
+    isaac.setVelocity(moveDir);
   }
   d.press = function(){
-    calcDir(presses, 4, dir);
-    setVelocity(isaac, speed, dir);
+    calcMoveDir(movePresses, 4, moveDir);
+    isaac.setVelocity(moveDir);
   }
   d.release = function(){
-    calcDir(presses, -4, dir);
-    setVelocity(isaac, speed, dir);
+    calcMoveDir(movePresses, -4, moveDir);
+    isaac.setVelocity(moveDir);
   }
   i.press = function(){
-    isaac.direction = 'up';
     isaac.isShooting = true;
+    isaac.setFaceDir(calcFaceDir(facePresses, 1));
+  }
+  i.release = function(){
+    if (j.isUp && k.isUp && l.isUp){
+      isaac.isShooting = false;
+    }
+    isaac.setFaceDir(calcFaceDir(facePresses, -1));
   }
   j.press = function(){
-    isaac.direction = 'down';
     isaac.isShooting = true;
+    isaac.setFaceDir(calcFaceDir(facePresses, 2));
+  }
+  j.release = function(){   
+    if (i.isUp && k.isUp && l.isUp){
+      isaac.isShooting = false;
+    }
+    isaac.setFaceDir(calcFaceDir(facePresses, -2));
   }
   k.press = function(){
-    isaac.direction = 'right';
     isaac.isShooting = true;
+    isaac.setFaceDir(calcFaceDir(facePresses, 3));
+  }
+  k.release = function(){
+    if (i.isUp && j.isUp && l.isUp){
+      isaac.isShooting = false;
+    }
+    isaac.setFaceDir(calcFaceDir(facePresses, -3));
   }
   l.press = function(){
-    isaac.direction = 'left';
     isaac.isShooting = true;
+    isaac.setFaceDir(calcFaceDir(facePresses, 4));
   }      
+  l.release = function(){
+    if (i.isUp && j.isUp && k.isUp){
+      isaac.isShooting = false;
+    }
+    isaac.setFaceDir(calcFaceDir(facePresses, -4));
+  }
 }
 
 var gameLoop = function(){
@@ -287,34 +365,18 @@ var play = function(){
       continue
     };
     var sprite = sprites[key];
-    sprite.x += sprite.vx;
-    sprite.y += sprite.vy;
-    if (sprite.direction != null){
-      if (sprite.isShooting && Date.now() - sprite.lastShot > sprite.shotSpeed){
-        sprite.lastShot = Date.now();
-        if (sprite.direction == 'up'){
-          makeProjectile(sprite.x + sprite.width/2, sprite.y + sprite.height/2, sprite.vx, -speed);
-        }
-        else if (sprite.direction == 'left'){
-          makeProjectile(sprite.x + sprite.width/2, sprite.y + sprite.height/2, speed, sprite.vy);
-        }
-        else if (sprite.direction == 'down'){
-          makeProjectile(sprite.x + sprite.width/2, sprite.y + sprite.height/2, -speed, sprite.vy);
-        }
-        else{
-          makeProjectile(sprite.x + sprite.width/2, sprite.y + sprite.height/2, sprite.vx, speed);
-        }
-      }
+    sprite.move();
+    if (sprite.isShooting){
+      sprite.shoot();
     }
   }
   for (var i=0; i<projectiles.length; i++){
     projectiles[i].x += projectiles[i].vx;
     projectiles[i].y += projectiles[i].vy;
-    if(contain(projectiles[i], stage)){
-      projectiles.splice(i, 1);
-    }
+    // if(contain(projectiles[i], stage)){
+    //   projectiles.splice(i, 1);
+    // }
   }
-  console.log(projectiles.length);
 }
 
 var init = function(){
