@@ -26,7 +26,7 @@ var config = {
     out: './server/public/stylesheets'
   },
   images: {
-    src: './images/**/*',
+    src: './game/img/**/*',
     out: './server/public/imgs'
   },
   static: {

@@ -23,3 +23,5 @@ ReactDOM.render(
   <MainComponent />,
   document.getElementById('main-component')
 );
+
+require('./main');

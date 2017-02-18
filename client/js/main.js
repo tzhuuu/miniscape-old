@@ -72,9 +72,9 @@ var initSprites = function(){
   // load images
   PIXI.loader
     .add([
-       "../img/isaac.png"
-     //  "../img/ .png",
-     //  "../img/ .png"
+       "../imgs/isaac.png"
+     //  "../imgs/ .png",
+     //  "../imgs/ .png"
      ])
     .load(setup);
 
@@ -82,7 +82,7 @@ var initSprites = function(){
   function setup() {
     // create isaac sprite from texture
     var isaac = new Sprite(
-      loader.resources["../img/isaac.png"].texture
+      loader.resources["../imgs/isaac.png"].texture
     );
 
     // set position
@@ -107,19 +107,42 @@ var initSprites = function(){
 
     // rerender stage
     renderer.render(stage);
+
+    initControls();
+    gameLoop();
   }
 }
 
 var initControls = function(){
   var isaac = sprites['isaac'];
+  var w = keyboard(119);
+  var a = keyboard(65);
   var s = keyboard(83);
-  s.press = function() {
+  var d = keyboard(68);
+  w.press = function() {
     isaac.vy = -5;
   };
+  w.release = function() {
+    isaac.vy = 0;
+  };
+  a.press = function() {
+    isaac.vx = -5;
+  };
+  a.release = function() {
+    isaac.vx = 0;
+  };
+  s.press = function() {
+    isaac.vy = 5;
+  };
   s.release = function() {
+    isaac.vy = 0;
+  };
+  d.press = function() {
     isaac.vx = 5;
   };
-  var d = keyboard(68);
+  d.release = function() {
+    isaac.vx = 0;
+  };
 }
 
 var gameLoop = function(){
@@ -144,7 +167,5 @@ var play = function(){
 var init = function(){
   initStage();
   initSprites();
-  initControls();
-  gameLoop();
 }
 init();
