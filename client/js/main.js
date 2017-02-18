@@ -27,29 +27,32 @@ var Container = PIXI.Container,
     Sprite = PIXI.Sprite,
     Graphics = PIXI.Graphics;
 
-var Character = function(sprite){
+var Character = function(sprite, name, x, y, speed,
+                         faceDir, shotSpeed, bulletSpeed){
 
   this.sprite = sprite;
+  this.name = name;
   
   this.spriteContainer = new Container();
-  this.spriteContainer.x = sprite.x;
-  this.spriteContainer.y = sprite.y;
+  this.spriteContainer.x = x;
+  this.spriteContainer.y = y;
   this.spriteContainer.addChild(this.sprite);
 
   // set shooting info
   this.isShooting = false;
-  this.faceDir = 'down';
-  this.shotSpeed = 100;
-  this.bulletSpeed = 7.5;
+  this.faceDir = faceDir;
+  this.shotSpeed = shotSpeed;
+  this.bulletSpeed = bulletSpeed;
   this.lastShot = Date.now();
 
   // set velocity
-  this.speed = 5;
+  this.speed = speed;
   this.vx = 0;
   this.vy = 0;
 
   // create the health bar
   var healthBar = new PIXI.DisplayObjectContainer();
+  this.healthBar = healthBar;
   healthBar.position.set(sprite.x, sprite.y)
 
   // create the black background rectangle
@@ -61,6 +64,7 @@ var Character = function(sprite){
 
   // create the front red rectangle
   var outerBar = new PIXI.Graphics();
+  this.outerBar = outerBar;
   outerBar.beginFill(0xFF3300);
   outerBar.drawRect(sprite.x + sprite.width/4, sprite.y + sprite.height/6, sprite.width/2, 6);
   outerBar.endFill();
@@ -69,7 +73,12 @@ var Character = function(sprite){
   healthBar.outer = outerBar;
   
   this.spriteContainer.addChild(healthBar);
-  stage.addChild(this.spriteContainer);
+  playerContainer.addChild(this.spriteContainer);
+}
+
+var Projectile = function(graphic, from){
+  this.graphic = graphic;
+  this.from = from;
 }
 
 var keyboard = function(keyCode) {
@@ -142,6 +151,7 @@ var initSprites = function(width, height){
   PIXI.loader
     .add([
        "../imgs/isaac.png",
+       "../imgs/krampus.png",
        "imgs/ground61.png",
        "imgs/ground62.png",
        "imgs/ground67.png",
@@ -160,9 +170,14 @@ var initSprites = function(width, height){
     // create isaac sprite from texture
     var isaac = new Character(new Sprite(
       loader.resources["../imgs/isaac.png"].texture
-    ));
+    ), 'isaac', window.innerWidth/2, window.innerHeight/2, 5, 'down', 200, 7.5);
+
+    var krampus = new Character(new Sprite(
+      loader.resources["../imgs/krampus.png"].texture
+    ), 'krampus', window.innerWidth/2, 0, 0, 'down', 300, 4);
 
     characters['isaac'] = isaac;
+    characters['krampus'] = krampus;
 
     // var scaleFactor = (height /5) / isaac.height;
     // isaac.scale.x = scaleFactor;
@@ -171,7 +186,7 @@ var initSprites = function(width, height){
     // isaac.height = height/ 15;
 
     // add isaac to stage
-    playerContainer.addChild(isaac);
+    //playerContainer.addChild(isaac);
 
     // set game state
     state = play;
@@ -292,16 +307,16 @@ Character.prototype.shoot = function(){
   if (Date.now() - this.lastShot > this.shotSpeed){
     this.lastShot = Date.now();
     if (this.faceDir == 'up'){
-      makeProjectile(this.spriteContainer.x + this.spriteContainer.width/2, this.spriteContainer.y + this.spriteContainer.height/2, this.vx, -this.bulletSpeed);
+      makeProjectile(this.spriteContainer.x + this.spriteContainer.width/2, this.spriteContainer.y + this.spriteContainer.height/2, this.vx, -this.bulletSpeed, this.name);
     }
     else if (this.faceDir == 'left'){
-      makeProjectile(this.spriteContainer.x + this.spriteContainer.width/2, this.spriteContainer.y + this.spriteContainer.height/2, -this.bulletSpeed, this.vy);
+      makeProjectile(this.spriteContainer.x + this.spriteContainer.width/2, this.spriteContainer.y + this.spriteContainer.height/2, -this.bulletSpeed, this.vy, this.name);
     }
     else if (this.faceDir == 'down'){
-      makeProjectile(this.spriteContainer.x + this.spriteContainer.width/2, this.spriteContainer.y + this.spriteContainer.height/2, this.vx, this.bulletSpeed);
+      makeProjectile(this.spriteContainer.x + this.spriteContainer.width/2, this.spriteContainer.y + this.spriteContainer.height/2, this.vx, this.bulletSpeed, this.name);
     }
     else{
-      makeProjectile(this.spriteContainer.x + this.spriteContainer.width/2, this.spriteContainer.y + this.spriteContainer.height/2, this.bulletSpeed, this.vy);
+      makeProjectile(this.spriteContainer.x + this.spriteContainer.width/2, this.spriteContainer.y + this.spriteContainer.height/2, this.bulletSpeed, this.vy, this.name);
     }
   }
 }
@@ -311,7 +326,11 @@ Character.prototype.move = function(){
   this.spriteContainer.y += this.vy;
 }
 
-var makeProjectile = function(x, y, vx, vy){
+Character.prototype.takeDamage = function(){
+  this.healthBar.outer.width /= 2;
+}
+
+var makeProjectile = function(x, y, vx, vy, from){
     var circle = new Graphics();
     circle.beginFill(0x9966FF);
     circle.drawCircle(0, 0, 7);
@@ -320,15 +339,15 @@ var makeProjectile = function(x, y, vx, vy){
     circle.y = y;
     circle.vx = vx;
     circle.vy = vy;
-    projectiles.push(circle);
+    var projectile = new Projectile(circle, from);
+    projectiles.push(projectile);
     circle.zIndex = -10;
     playerContainer.addChild(circle);
-
 }
 
-Graphics.prototype.move = function(){
-    this.x += this.vx;
-    this.y += this.vy;
+Projectile.prototype.move = function(){
+    this.graphic.x += this.graphic.vx;
+    this.graphic.y += this.graphic.vy;
 }
 
 var initControls = function(){
@@ -450,9 +469,22 @@ var play = function(){
   for (var i=0; i<projectiles.length; i++){
     projectiles[i].move();
     // check collision
-    var collision = bump.contain(projectiles[i], {x: -25, y: -25, width: window.innerWidth + 50, height: window.innerHeight + 50});
-    if (collision){
+    var boundsCollision = bump.contain(projectiles[i].graphic, {x: -25, y: -25, width: window.innerWidth + 50, height: window.innerHeight + 50});
+    if (boundsCollision){
       out.push(i);
+    }
+    for (var key in characters){
+      if (!characters.hasOwnProperty(key)){
+        continue;
+      }
+      if (projectiles[i].from == character.name){
+        continue;
+      }
+      var character = characters[key];
+      var charCollision = bump.hitTestCircleRectangle(projectiles[i].graphic, character.spriteContainer);
+      if (charCollision){
+        character.takeDamage();
+      }
     }
   }
   for (var i = 0; i < out.length; i++) {
