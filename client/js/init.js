@@ -14,20 +14,21 @@ global.foreground;
 global.state;
 global.renderer;
 global.stage;
+global.bump = new Bump(PIXI);
 
 // requires
 var Character = require('./models/character');
 var Projectile = require('./models/projectile');
 var Map = require('../../game/maps/map');
 
-var init = function(gameLoop) {
-  preload(gameLoop);
+var init = function(gameLoop, map) {
+  preload(gameLoop, map);
   initPixi();
   // gameLoop();
 }
 
 // load textures
-var preload = function(gameLoop) {
+var preload = function(gameLoop, map) {
   return PIXI.loader
     .add([
        "./imgs/isaac.png",
@@ -37,7 +38,7 @@ var preload = function(gameLoop) {
        "./imgs/ground67.png",
      ])
     .load(function() {
-      setup(gameLoop)
+      setup(gameLoop, map)
     });
 }
 
@@ -122,7 +123,7 @@ var initPixi = function() {
 }
 
 // set up the game
-var setup = function(gameLoop) {
+var setup = function(gameLoop, map) {
   var width = window.innerWidth;
   var height = window.innerHeight;
 
@@ -138,19 +139,18 @@ var setup = function(gameLoop) {
 
   // rerender stage
   renderer.render(stage);
-
-  initMap(width, height);
+  initMap(width, height, map);
   initControls();
   stage.updateLayersOrder();
 
   gameLoop();
 }
 
-var initMap = function(width, height) {
+var initMap = function(width, height, map) {
 
-  map = new Map(80, 45);
+  map[0] = new Map(80, 45);
 
-  map.textures = {
+  map[0].textures = {
     base: loader.resources['./imgs/ground61.png'].texture,
     ground: loader.resources['./imgs/ground61.png'].texture,
     wall: loader.resources['./imgs/ground62.png'].texture,
@@ -160,7 +160,7 @@ var initMap = function(width, height) {
   var container = new PIXI.Container();
   container.zIndex = 10;
   stage.addChild(container);
-  map.readMap('', '', map.textures, container, {width: width, height: height});
+  map[0].readMap('', '', map[0].textures, container, {width: width, height: height});
 
 };
 
