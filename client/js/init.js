@@ -171,7 +171,10 @@ var setup = function() {
     'faceDir': 'down',
     'bulletSpeed': 8,
     'shotSpeed': 200,
-    'isShooting': false
+    'isShooting': false,
+    'projectileOptions': {
+      'radius': 10
+    }
   });
 
   var krampus = new Character({
@@ -183,7 +186,11 @@ var setup = function() {
     'faceDir': 'down',
     'bulletSpeed': 1,
     'shotSpeed': 1000,
-    'isShooting': true
+    'isShooting': true,
+    'projectileOptions': {
+      'radius': 10,
+      'growthRate': 1.0025
+    }
   });
 
   CharacterStore.addCharacter('isaac', isaac);
