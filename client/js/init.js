@@ -160,6 +160,24 @@ var setup = function() {
   var map = Map.createMap(mapString, {' ': 'base', 'X' : 'wall', 'C': 'water'},
                           textures, mapContainer, Settings.unit);
   Map.addMap('town', map);
+  
+  var bulletGraphic = new PIXI.Graphics();
+  bulletGraphic.beginFill(0x9966FF);
+  bulletGraphic.drawCircle(10, 10, 10);
+  bulletGraphic.endFill();
+  var bulletTexture = PIXI.RenderTexture.create(bulletGraphic.width, bulletGraphic.height);
+  renderer.render(bulletGraphic, bulletTexture);
+
+  var basicProjectile = {
+    'radius': 10,
+    'bulletTexture': bulletTexture
+  }
+
+  var growthProjectile = {
+    'radius': 10,
+    'growthRate': 1.0025,
+    'bulletTexture': bulletTexture
+  }
 
   // create isaac sprite from texture
   var isaac = new Character({
@@ -172,9 +190,7 @@ var setup = function() {
     'bulletSpeed': 8,
     'shotSpeed': 200,
     'isShooting': false,
-    'projectileOptions': {
-      'radius': 10
-    }
+    'projectileOptions': basicProjectile
   });
 
   var krampus = new Character({
@@ -187,10 +203,7 @@ var setup = function() {
     'bulletSpeed': 1,
     'shotSpeed': 1000,
     'isShooting': true,
-    'projectileOptions': {
-      'radius': 10,
-      'growthRate': 1.0025
-    }
+    'projectileOptions': growthProjectile
   });
 
   CharacterStore.addCharacter('isaac', isaac);

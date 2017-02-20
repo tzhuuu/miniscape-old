@@ -34,16 +34,16 @@ Projectile.prototype.move = function() {
 }
 
 Projectile.prototype.grow = function() {
-  this.scale.x *= this.growthRate;
-  this.scale.y *= this.growthRate;
+  //this.scale.x *= this.growthRate;
+  this.width *= this.growthRate;
+  //this.scale.y *= this.growthRate;
+  this.height *= this.growthRate;
 }
 
 Projectile.make = function(x, y, vx, vy, from, options) {
-  var circle = new PIXI.Graphics();
-  circle.beginFill(0x9966FF);
-  circle.drawCircle(options.radius, options.radius, options.radius);
-  circle.endFill();
-  var projectile = new Projectile(circle, x, y, vx, vy, from, options);
+  var bulletSprite = new PIXI.Sprite(options.bulletTexture);
+  bulletSprite.circular = true;
+  var projectile = new Projectile(bulletSprite, x, y, vx, vy, from, options);
   Layers.getLayer('projectiles').addChild(projectile);
 }
 

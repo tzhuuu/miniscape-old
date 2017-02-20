@@ -75,7 +75,7 @@ var updateProjectiles = function() {
         continue;
       }
 
-      var charCollision = bump.hit(projectile.children[0], character.sprite, false, false, true);
+      var charCollision = bump.hit(projectile, character.sprite, false, false, true);
       if (charCollision){
         projectile.hit.push(character.name);
         character.takeDamage();
