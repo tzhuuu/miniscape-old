@@ -8,7 +8,7 @@ class Maps {
     return this.maps[name];
   }
 
-  setMap(name, map) {
+  addMap(name, map) {
     this.maps[name] = map;
   }
 
@@ -16,7 +16,7 @@ class Maps {
     delete this.maps[name];
   }
 
-  createMap(mapString, key, textures, container, screenSize) {
+  createMap(mapString, key, textures, container, unit) {
     /*
       mapString - a list of strings that represent the map
       key - maps characters to a texture name
@@ -24,12 +24,14 @@ class Maps {
       container - the container the textures should be added to
       screenSize - dimensions of the screen
     */
-    var map = new Map(screenSize);
+    var map = new Map(unit);
 
     var tWidth = textures.base.width;
     var tHeight = textures.base.height;
-    var scaleX = screenSize.width / (mapString[0].length * tWidth);
-    var scaleY = screenSize.height / (mapString.length *tHeight);
+    // var scaleX = screenSize.width / (mapString[0].length * tWidth);
+    // var scaleY = screenSize.height / (mapString.length *tHeight);
+    var scaleX = unit / tWidth;
+    var scaleY = unit / tHeight;
 
     for (var i = 0; i < mapString.length; i++) {
       var line = mapString[i];
@@ -55,19 +57,24 @@ class Maps {
         }
       }
     }
+    map.size = {
+      width: ground.width * mapString[0].length,
+      height: ground.height * mapString.length
+    }
     return map;
   }
 }
 
 // map object definition
-var Map = function(screenSize) {
-  this.size = {
-    width: screenSize.width || 0,
-    height: screenSize.height || 0
-  }
+var Map = function(unit) {
+  this.unit = unit;
   this.textures = {};
   this.npcs = [];
   this.wallSprites = [];
+  this.size = {
+    width: 0,
+    height: 0
+  }
 }
 
 var instance = new Maps();

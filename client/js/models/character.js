@@ -1,6 +1,7 @@
 var HealthBar = require('./healthbar');
 var Projectile = require('./projectile');
 var Layers = require('../layers');
+var Settings = require('../settings');
 
 var Character = function(texture, name, x, y, speed, faceDir, shotSpeed,
                          bulletSpeed, isShooting, options) {
@@ -8,6 +9,7 @@ var Character = function(texture, name, x, y, speed, faceDir, shotSpeed,
   options = options || {};
 
   PIXI.Container.call(this);
+  this.coordinates = {x:  x, y: y};
 
   this.x = x;
   this.y = y;
