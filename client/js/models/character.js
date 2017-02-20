@@ -2,31 +2,28 @@ var HealthBar = require('./healthbar');
 var Projectile = require('./projectile');
 var Layers = require('../layers');
 
-var Character = function(texture, name, x, y, speed, faceDir, shotSpeed,
-                         bulletSpeed, isShooting, options) {
+var Character = function(options) {
 
   options = options || {};
 
   PIXI.Container.call(this);
 
-  this.x = x;
-  this.y = y;
-
   this.name = options.name || "";
-  this.x = options.x || x;
-  this.y = options.y || y;
+  this.x = options.x || 0;
+  this.y = options.y || 0;
   this.speed = options.speed || 100;
   this.faceDir = options.faceDir || 'down';
   this.shotSpeed = options.shotSpeed || 1000;
   this.bulletSpeed = options.bulletSpeed || 0;
   this.isShooting = options.isShooting || false;
+  this.lastShot = Date.now();
 
   for (var p in options) {
     if (!options.hasOwnProperty(p)) continue;
     this.p = options[p];
   }
 
-  this.sprite = new PIXI.Sprite(texture);
+  this.sprite = new PIXI.Sprite(options.texture);
 
   this.sprite.y = 10;
   this.addChild(this.sprite);
@@ -41,17 +38,6 @@ var Character = function(texture, name, x, y, speed, faceDir, shotSpeed,
 
   // console.log(this.container.w)
 
-  this.name = name;
-
-  // set shooting info
-  this.isShooting = isShooting;
-  this.faceDir = faceDir;
-  this.shotSpeed = shotSpeed;
-  this.bulletSpeed = bulletSpeed;
-  this.lastShot = Date.now();
-
-  // set velocity
-  this.speed = speed;
   this.vx = 0;
   this.vy = 0;
 

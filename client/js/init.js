@@ -10,6 +10,8 @@ var Q = require('q');
 var Map = require('./map');
 var Config = require('./config');
 
+var CharacterStore = require('./stores/characterStore');
+var ProjectileStore = require('./stores/projectileStore');
 var Layers = require('./layers');
 
 var stage;
@@ -141,11 +143,32 @@ var setup = function() {
   Map.setMap('town', map);
 
   // create isaac sprite from texture
-  var isaac = new Character(PIXI.loader.resources["./imgs/isaac.png"].texture,
-              'isaac', window.innerWidth/2, window.innerHeight/2, 5, 'down', 200, 7.5);
+  var isaac = new Character({
+    'texture': PIXI.loader.resources["./imgs/isaac.png"].texture,
+    'name': 'isaac',
+    'x': window.innerWidth / 2,
+    'y': window.innerWidth / 2,
+    'speed': 5,
+    'faceDir': 'down',
+    'bulletSpeed': 8,
+    'shotSpeed': 200,
+    'isShooting': false
+  });
 
-  var krampus = new Character(PIXI.loader.resources["./imgs/krampus.png"].texture,
-                'krampus', window.innerWidth/2, 0, 0, 'down', 1000, 1, true);
+  var krampus = new Character({
+    'texture': PIXI.loader.resources["./imgs/krampus.png"].texture,
+    'name': 'krampus',
+    'x': window.innerWidth / 2,
+    'y': 0,
+    'speed': 0,
+    'faceDir': 'down',
+    'bulletSpeed': 1,
+    'shotSpeed': 1000,
+    'isShooting': true
+  });
+
+  CharacterStore.addCharacter('isaac', isaac);
+  CharacterStore.addCharacter('krampus', krampus);
 
   Layers.getLayer('characters').addChild(isaac);
   Layers.getLayer('characters').addChild(krampus);
@@ -160,7 +183,7 @@ var setup = function() {
 var initControls = function(){
 
   var keyboard = require('./utils/keyboard');
-  var isaac = Layers.getLayer('characters').getChildAt(0);
+  var isaac = CharacterStore.getCharacter('isaac');
 
   isaac.zOrder = -10;
 
