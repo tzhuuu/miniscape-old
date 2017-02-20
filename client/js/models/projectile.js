@@ -1,3 +1,5 @@
+var Layers = require('../layers');
+
 var Projectile = function(graphic, from, x, y, vx, vy){
 
   PIXI.Container.call(this);
@@ -28,14 +30,14 @@ Projectile.prototype.move = function() {
 }
 
 Projectile.make = function(x, y, vx, vy, from) {
-  var circle = new Graphics();
+  var circle = new PIXI.Graphics();
   circle.beginFill(0x9966FF);
   circle.drawCircle(7, 7, 7);
   circle.endFill();
   circle.x = 0;
   circle.y = 0;
   var projectile = new Projectile(circle, from, x, y, vx, vy);
-  projectiles.addChild(projectile);
+  Layers.getLayer('projectiles').addChild(projectile);
 }
 
 module.exports = Projectile;

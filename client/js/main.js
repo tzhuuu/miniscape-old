@@ -1,64 +1,31 @@
 var init = require('./init');
+var game = require('./game');
 
-var Character = require('./models/character');
-var Projectile = require('./models/projectile');
+var state = {};
 
-var map = [0];
-
-var gameLoop = function(){
-  // loop this function at 60 frames per second
-  requestAnimationFrame(gameLoop);
-
-  // update current game state
-  state();
-
-  // render the stage to see the animation
-  renderer.render(stage);
+var main = function() {
+  init(state, mainLoop).then(function() {
+    game.setup();
+    state.update = game.play;
+  }).then(null, function(err) {
+    console.log(err);
+  });
 }
 
-var play = function(){
-  updateCharacters();
-  updateProjectiles();
-}
-state = play;
+var mainLoop = function(renderer, stage) {
+  var timeDelta;
+  var timestamp = Date.now();
 
-var updateCharacters = function() {
-  // move sprites
-  for(var i = 0; i < characters.children.length; i++) {
-    var character = characters.children[i];
-    character.move(map[0]);
-    if (character.isShooting){
-      character.shoot();
-    }
+  var loop = function() {
+    timeDelta = Date.now() - timestamp;
+    timestamp = Date.now();
+
+    requestAnimationFrame(loop);
+    state.update(timeDelta);
+    renderer.render(stage);
   }
+
+  loop();
 }
 
-var updateProjectiles = function() {
-  // move projectiles
-  for (var i=0; i<projectiles.children.length; i++){
-    var projectile = projectiles.children[i];
-    projectile.move();
-
-    // check collision
-    var boundsCollision = bump.contain(projectile,
-                          {x: -25, y: -25, width: window.innerWidth + 50, height: window.innerHeight + 50});
-    if (boundsCollision){
-      projectiles.removeChild(projectile);
-    }
-    for (var j = 0; j < characters.children.length; j++) {
-      var character = characters.children[j];
-      if (projectile.from === character.name ||
-          projectile.hit.indexOf(character.name) != -1){
-        continue;
-      }
-
-      var charCollision = bump.hit(projectile.children[0], character.sprite, false, false, true);
-      if (charCollision){
-        projectile.hit.push(character.name);
-        character.takeDamage();
-      }
-    }
-  }
-}
-
-init(gameLoop, map);
+main();
