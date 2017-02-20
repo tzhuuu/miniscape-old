@@ -136,19 +136,18 @@ Character.prototype.takeDamage = function(){
   }
 }
 
-Character.prototype.move = function(){
+Character.prototype.move = function(map){
   this.x += this.vx;
   this.y += this.vy;
 
-  // for (var i = map.wallSprites.length - 1; i >= 0; i--) {
-  // 	var s = map.wallSprites[i];
-  //   // var collision = ;
-  //   if (bump.hit(this, s)) {
-  //     this.x -= this.vx;
-  //     this.y -= this.vy;
-  // 		return;
-  // 	}
-  // }
+  for (var i = map.wallSprites.length - 1; i >= 0; i--) {
+  	var s = map.wallSprites[i];
+    if (bump.hit(this.sprite, s)) {
+      this.x -= this.vx;
+      this.y -= this.vy;
+  		return;
+  	}
+  }
 }
 
 Character.prototype.shoot = function(){
