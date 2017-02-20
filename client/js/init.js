@@ -70,6 +70,8 @@ var loadAssets = function() {
   var deferred = Q.defer();
 
   // initialize socket.io connection
+  var socket = require('./sockets/socket');
+  socket.init();
 
   // load sounds
 
