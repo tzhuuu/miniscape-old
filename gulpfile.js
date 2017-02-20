@@ -18,7 +18,7 @@ var gulp = require('gulp'),
     babelify = require('babelify'),
     source = require('vinyl-source-stream')
     runSequence = require('run-sequence')
-    nodemon = require('nodemon')
+    nodemon = require('gulp-nodemon')
 
 var config = {
   scss: {
