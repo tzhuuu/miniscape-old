@@ -5,7 +5,13 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var expressLogger = require('./util/logger').expressLogger;
+var log = require('./util/logger').logger;
 var index = require('./routes/index');
+
+log.info('Initializing app.js');
+
+// Initialize mongoose
+require('../mongo/initMongo')(log);
 
 var app = express();
 
