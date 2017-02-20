@@ -207,5 +207,4 @@ var initControls = function(){
   });
 }
 
-
 module.exports = init;
