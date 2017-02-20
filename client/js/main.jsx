@@ -27,5 +27,4 @@ ReactDOM.render(
   document.getElementById('main-component')
 );
 
-require('./utils/extensions');
 require('./main');

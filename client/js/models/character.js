@@ -1,5 +1,6 @@
 var HealthBar = require('./healthbar');
 var Projectile = require('./projectile');
+var Layers = require('../layers');
 
 var Character = function(texture, name, x, y, speed, faceDir, shotSpeed,
                          bulletSpeed, isShooting, options) {
@@ -25,7 +26,7 @@ var Character = function(texture, name, x, y, speed, faceDir, shotSpeed,
     this.p = options[p];
   }
 
-  this.sprite = new Sprite(texture);
+  this.sprite = new PIXI.Sprite(texture);
 
   this.sprite.y = 10;
   this.addChild(this.sprite);
@@ -169,7 +170,7 @@ Character.prototype.shoot = function(){
 }
 
 Character.prototype.die = function(){
-  characters.removeChild(this);
+  Layers.getLayer('characters').removeChild(this);
 }
 
 module.exports = Character;
