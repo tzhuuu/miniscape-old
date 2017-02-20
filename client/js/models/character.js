@@ -1,12 +1,14 @@
 var HealthBar = require('./healthbar');
 var Projectile = require('./projectile');
 var Layers = require('../layers');
+var Settings = require('../settings');
 
 var Character = function(options) {
 
   options = options || {};
 
   PIXI.Container.call(this);
+  this.coordinates = {x:  x, y: y};
 
   this.name = options.name || "";
   this.x = options.x || 0;

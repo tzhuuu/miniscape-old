@@ -1,14 +1,22 @@
 var Layers = require('./layers');
 var Map = require('./map');
+var Camera = require('./camera');
 
 var Character = require('./models/character');
 var Projectile = require('./models/projectile');
 
 var game = {};
+var camera;
 
 game.play = function(){
   updateCharacters();
   updateProjectiles();
+  camera.update();
+}
+
+game.setup = function() {
+  console.log(Layers.getLayer('characters').children[0]);
+  camera = new Camera(Layers.getLayer('stage'), null, Map.getMap('town'), Layers.getLayer('characters').children[0]);
 }
 
 var updateCharacters = function() {

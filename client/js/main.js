@@ -5,7 +5,10 @@ var state = {};
 
 var main = function() {
   init(state, mainLoop).then(function() {
+    game.setup();
     state.update = game.play;
+  }).then(null, function(err) {
+    console.log(err);
   });
 }
 

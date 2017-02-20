@@ -12,7 +12,9 @@ var Config = require('./config');
 
 var CharacterStore = require('./stores/characterStore');
 var ProjectileStore = require('./stores/projectileStore');
+
 var Layers = require('./layers');
+var Settings = require('./settings');
 
 var stage;
 var renderer;
@@ -50,6 +52,10 @@ var initPixi = function() {
   renderer.view.style.position = "absolute";
   renderer.view.style.display = "block";
   renderer.autoResize = true;
+
+  // Enforce a 16:9 ratio
+  Settings.unit = Math.floor(Math.min(window.innerWidth/16, window.innerHeight/9));
+
   renderer.resize(window.innerWidth, window.innerHeight);
 
   // add the canvas to the HTML document
@@ -139,8 +145,8 @@ var setup = function() {
     "X           C                          X"
   ];
   var map = Map.createMap(mapString, {' ': 'base', 'X' : 'wall', 'C': 'water'},
-                          textures, mapContainer, {width: width, height: height});
-  Map.setMap('town', map);
+                          textures, mapContainer, Settings.unit);
+  Map.addMap('town', map);
 
   // create isaac sprite from texture
   var isaac = new Character({
