@@ -1,5 +1,10 @@
 # miniscape
 
+## TODO
+* Set up socket
+* Build objects on server side
+* Set up database
+
 ## Proposed init flow
 
 `init()` - initialize everything we need before the main game loop
