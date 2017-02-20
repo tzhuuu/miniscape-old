@@ -8,7 +8,7 @@ var Character = function(options) {
   options = options || {};
 
   PIXI.Container.call(this);
-  this.coordinates = {x:  x, y: y};
+  this.coordinates = {x:  options.x, y: options.y};
 
   this.name = options.name || "";
   this.x = options.x || 0;
