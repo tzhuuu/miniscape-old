@@ -16,6 +16,7 @@ var Character = function(options) {
   this.shotSpeed = options.shotSpeed || 1000;
   this.bulletSpeed = options.bulletSpeed || 0;
   this.isShooting = options.isShooting || false;
+  this.projectileOptions = options.projectileOptions || {};
   this.lastShot = Date.now();
 
   for (var p in options) {
@@ -141,16 +142,16 @@ Character.prototype.shoot = function(){
   if (Date.now() - this.lastShot > this.shotSpeed){
     this.lastShot = Date.now();
     if (this.faceDir == 'up'){
-      Projectile.make(this.x + this.width/2, this.y + this.height/2, this.vx, -this.bulletSpeed, this.name);
+      Projectile.make(this.x + this.width/2, this.y + this.height/2, this.vx, -this.bulletSpeed, this.name, this.projectileOptions);
     }
     else if (this.faceDir == 'left'){
-      Projectile.make(this.x + this.width/2, this.y + this.height/2, -this.bulletSpeed, this.vy, this.name);
+      Projectile.make(this.x + this.width/2, this.y + this.height/2, -this.bulletSpeed, this.vy, this.name, this.projectileOptions);
     }
     else if (this.faceDir == 'down'){
-      Projectile.make(this.x + this.width/2, this.y + this.height/2, this.vx, this.bulletSpeed, this.name);
+      Projectile.make(this.x + this.width/2, this.y + this.height/2, this.vx, this.bulletSpeed, this.name, this.projectileOptions);
     }
     else{
-      Projectile.make(this.x + this.width/2, this.y + this.height/2, this.bulletSpeed, this.vy, this.name);
+      Projectile.make(this.x + this.width/2, this.y + this.height/2, this.bulletSpeed, this.vy, this.name, this.projectileOptions);
     }
   }
 }

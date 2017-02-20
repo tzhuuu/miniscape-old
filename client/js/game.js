@@ -27,6 +27,10 @@ var updateProjectiles = function() {
   for (var i=0; i<Layers.getLayer('projectiles').children.length; i++){
     var projectile = Layers.getLayer('projectiles').children[i];
     projectile.move();
+    
+    if (projectile.growthRate > 0){
+      projectile.grow();
+    }
 
     // check collision
     var boundsCollision = bump.contain(projectile,
