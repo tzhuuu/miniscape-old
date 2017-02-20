@@ -1,6 +1,6 @@
 var Layers = require('../layers');
 
-var Projectile = function(graphic, x, y, vx, vy, from, options){
+var Projectile = function(sprite, x, y, vx, vy, from, options){
 
   PIXI.Container.call(this);
 
@@ -9,8 +9,8 @@ var Projectile = function(graphic, x, y, vx, vy, from, options){
   this.vx = vx;
   this.vy = vy;
 
-  this.graphic = graphic;
-  this.addChild(graphic);
+  this.sprite = sprite;
+  this.addChild(sprite);
   this.from = from;
   this.hit = [];
 
@@ -19,10 +19,10 @@ var Projectile = function(graphic, x, y, vx, vy, from, options){
 
   var rect = new PIXI.Graphics();
   rect.beginFill(0xFFFF00);
-  rect.drawRect(graphic.x, graphic.y, graphic.width, graphic.height);
+  rect.drawRect(sprite.x, sprite.y, sprite.width, sprite.height);
   rect.endFill();
   this.addChild(rect);
-  this.swapChildren(rect, graphic);
+  this.swapChildren(rect, sprite);
 }
 
 Projectile.prototype = Object.create(PIXI.Container.prototype);
@@ -34,10 +34,8 @@ Projectile.prototype.move = function() {
 }
 
 Projectile.prototype.grow = function() {
-  //this.scale.x *= this.growthRate;
-  this.width *= this.growthRate;
-  //this.scale.y *= this.growthRate;
-  this.height *= this.growthRate;
+  this.sprite.width *= this.growthRate;
+  this.sprite.height *= this.growthRate;
 }
 
 Projectile.make = function(x, y, vx, vy, from, options) {

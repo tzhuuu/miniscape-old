@@ -175,7 +175,7 @@ var setup = function() {
 
   var growthProjectile = {
     'radius': 10,
-    'growthRate': 1.0025,
+    'growthRate': 1.003,
     'bulletTexture': bulletTexture
   }
 
