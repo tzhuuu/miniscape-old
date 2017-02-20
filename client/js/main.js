@@ -16,9 +16,9 @@ var mainLoop = function(renderer, stage) {
   var timeDelta;
   var timestamp = Date.now();
 
-  var loop = function() {
-    timeDelta = Date.now() - timestamp;
-    timestamp = Date.now();
+  var loop = function(ts) {
+    timeDelta = ts - timestamp;
+    timestamp = ts;
 
     requestAnimationFrame(loop);
     state.update(timeDelta);
