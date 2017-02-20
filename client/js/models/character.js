@@ -11,8 +11,8 @@ var Character = function(options) {
   this.coordinates = {x:  options.x, y: options.y};
 
   this.name = options.name || "";
-  this.x = options.x || 0;
-  this.y = options.y || 0;
+  this.x = options.x * Settings.unit || 0;
+  this.y = options.y * Settings.unit || 0;
   this.speed = options.speed || 100;
   this.faceDir = options.faceDir || 'down';
   this.shotSpeed = options.shotSpeed || 1000;
@@ -131,7 +131,7 @@ Character.prototype.move = function(map){
 
   for (var i = map.wallSprites.length - 1; i >= 0; i--) {
   	var s = map.wallSprites[i];
-    if (bump.hit(this.sprite, s)) {
+    if (bump.hit(this.sprite, s, false, false, true)) {
       this.x -= this.vx;
       this.y -= this.vy;
   		return;

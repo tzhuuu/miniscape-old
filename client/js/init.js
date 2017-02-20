@@ -41,7 +41,7 @@ var init = function(state, mainLoop) {
   return deferred.promise;
 }
 
-var loading = function() {
+var loading = function(timeDelta) {
   console.log('loading loading');
 }
 
@@ -119,31 +119,42 @@ var setup = function() {
     wall: PIXI.loader.resources['./imgs/ground62.png'].texture,
     water: PIXI.loader.resources['./imgs/ground67.png'].texture,
   }
+  // mapString = [
+  //   "            XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+  //   "                                       X",
+  //   "                                       X",
+  //   "                                       X",
+  //   "                                       X",
+  //   "                                       X",
+  //   "                                       X",
+  //   "                                       X",
+  //   "                                       X",
+  //   "                                       X",
+  //   "                                       X",
+  //   "                                       X",
+  //   "                                       X",
+  //   "                                       X",
+  //   "                                       X",
+  //   "                                       X",
+  //   "                                       X",
+  //   "                                       X",
+  //   "                                       X",
+  //   "                                       X",
+  //   "                                       X",
+  //   "X                                      X",
+  //   "X           C                          X"
+  // ];
   mapString = [
-    "            XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "X                                      X",
-    "X           C                          X"
-  ];
+    "XXXXXXXXXXXXXX",
+    "X            X",
+    "X            X",
+    "X            X",
+    "X            X",
+    "X            X",
+    "X            X",
+    "X            X",
+    "XXXXXXXXXXXXXX",
+  ]
   var map = Map.createMap(mapString, {' ': 'base', 'X' : 'wall', 'C': 'water'},
                           textures, mapContainer, Settings.unit);
   Map.addMap('town', map);
@@ -152,8 +163,8 @@ var setup = function() {
   var isaac = new Character({
     'texture': PIXI.loader.resources["./imgs/isaac.png"].texture,
     'name': 'isaac',
-    'x': window.innerWidth / 2,
-    'y': window.innerWidth / 2,
+    'x': 1.5,
+    'y': 1.5,
     'speed': 5,
     'faceDir': 'down',
     'bulletSpeed': 8,
@@ -164,7 +175,7 @@ var setup = function() {
   var krampus = new Character({
     'texture': PIXI.loader.resources["./imgs/krampus.png"].texture,
     'name': 'krampus',
-    'x': window.innerWidth / 2,
+    'x': 5,
     'y': 0,
     'speed': 0,
     'faceDir': 'down',

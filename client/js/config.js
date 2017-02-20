@@ -15,14 +15,19 @@ Config.assets = {
 
 Config.layers = [
   {
-    name: 'foreground',
+    name: 'camera',
     zIndex: 0,
     parent: 'stage'
   },
   {
+    name: 'foreground',
+    zIndex: 0,
+    parent: 'camera'
+  },
+  {
     name: 'background',
     zIndex: 10,
-    parent: 'stage'
+    parent: 'camera'
   },
   {
     name: 'characters',

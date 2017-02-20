@@ -8,15 +8,37 @@ var Projectile = require('./models/projectile');
 var game = {};
 var camera;
 
-game.play = function(){
+game.play = function(timeDelta){
   updateCharacters();
   updateProjectiles();
   camera.update();
+  updateFps(timeDelta);
+}
+
+var fpsText;
+var cooldown = 100;
+var td = 0;
+var style = new PIXI.TextStyle({
+  stroke: '#ffffff',
+  fill: ['#ffffff'],
+});
+var updateFps = function(timeDelta) {
+  td += timeDelta;
+  if (td < cooldown) return;
+  fpsText.text = Math.trunc(1000/timeDelta);
+  td = 0;
 }
 
 game.setup = function() {
-  console.log(Layers.getLayer('characters').children[0]);
-  camera = new Camera(Layers.getLayer('stage'), null, Map.getMap('town'), Layers.getLayer('characters').children[0]);
+  camera = new Camera(Layers.getLayer('camera'), null, Map.getMap('town'), Layers.getLayer('characters').children[0]);
+  camera.recalculate();
+
+  // Add fps to top right
+  fpsText = new PIXI.Text('Basic text in pixi', style);
+  fpsText.x = 0;
+  fpsText.y = 0;
+
+  Layers.getLayer('stage').addChild(fpsText);
 }
 
 var updateCharacters = function() {
