@@ -1,6 +1,7 @@
 var Layers = require('./layers');
 var Map = require('./map');
 var Camera = require('./camera');
+var Collisions = require('./utils/collisions');
 
 var Character = require('./models/character');
 var Projectile = require('./models/projectile');
@@ -57,7 +58,7 @@ var updateProjectiles = function() {
   for (var i=0; i<Layers.getLayer('projectiles').children.length; i++){
     var projectile = Layers.getLayer('projectiles').children[i];
     projectile.move();
-    
+
     if (projectile.growthRate > 0){
       projectile.grow();
     }
@@ -75,7 +76,13 @@ var updateProjectiles = function() {
         continue;
       }
 
-      var charCollision = bump.hit(projectile.children[1], character.sprite, false, false, true);      
+// <<<<<<< HEAD
+      projectile.children[1].circular = true;
+      var charCollision = bump.hit(projectile.children[1], character.sprite, false, false, true);
+// =======
+//       //var charCollision = bump.hit(projectile.children[0], character.sprite, false, false, true);
+//       var charCollision = Collisions.hit(projectile.children[1], character.sprite);
+// >>>>>>> ba39495f0b5d1eb62d22661568eff5859835e055
       if (charCollision){
         projectile.hit.push(character.name);
         character.takeDamage();

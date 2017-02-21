@@ -140,29 +140,29 @@ var setup = function() {
     water: PIXI.loader.resources['./imgs/ground67.png'].texture,
   }
   mapString = [
-    "            XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "X                                      X",
-    "X           C                          X"
+    "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                      X                     X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                XXXX                        X",
+    "X               X    X                       X",
+    "X              X      X                      X",
+    "X               X     X                      X",
+    "X                XXXXX                       X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
   ];
   // mapString = [
   //   "XXXXXXXXXXXXXX",
@@ -178,7 +178,7 @@ var setup = function() {
   var map = Map.createMap(mapString, {' ': 'base', 'X' : 'wall', 'C': 'water'},
                           textures, mapContainer, Settings.unit);
   Map.addMap('town', map);
-  
+
   var bulletGraphic = new PIXI.Graphics();
   bulletGraphic.beginFill(0x9966FF);
   bulletGraphic.drawCircle(10, 10, 10);
@@ -194,6 +194,23 @@ var setup = function() {
   var growthProjectile = {
     'radius': 10,
     'growthRate': 1.003,
+    'bulletTexture': bulletTexture
+  }
+
+  var bulletGraphic = new PIXI.Graphics();
+  bulletGraphic.beginFill(0x9966FF);
+  bulletGraphic.drawCircle(10, 10, 10);
+  bulletGraphic.endFill();
+  var bulletTexture = PIXI.RenderTexture.create(bulletGraphic.width, bulletGraphic.height);
+  renderer.render(bulletGraphic, bulletTexture);
+
+  var basicProjectile = {
+    'radius': 10,
+    'bulletTexture': bulletTexture
+  }
+  var growthProjectile = {
+    'radius': 10,
+    'growthRate': 1.0025,
     'bulletTexture': bulletTexture
   }
 
@@ -218,8 +235,8 @@ var setup = function() {
     'y': 0,
     'speed': 0,
     'faceDir': 'down',
-    'bulletSpeed': 1,
-    'shotSpeed': 1000,
+    'bulletSpeed': 0,
+    'shotSpeed': 6000,
     'isShooting': true,
     'projectileOptions': growthProjectile
   });
@@ -228,10 +245,10 @@ var setup = function() {
   krampus.zOrder = 10;
 
   CharacterStore.addCharacter('isaac', isaac);
-  CharacterStore.addCharacter('krampus', krampus);
+  // CharacterStore.addCharacter('krampus', krampus);
 
   Layers.getLayer('characters').addChild(isaac);
-  Layers.getLayer('characters').addChild(krampus);
+  // Layers.getLayer('characters').addChild(krampus);
 
   // rerender stage
   renderer.render(stage);
