@@ -1426,7 +1426,13 @@ var Bump = (function () {
     between rectangles, circles, and points.
     */
 
-  }, {
+  },
+  // {
+  //   key: "rectangleCollisionX",
+  //   value: function rectangleCollisionX()
+  //
+  // }
+  {
     key: "hit",
     value: function hit(a, b) {
       var react = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
@@ -1478,12 +1484,12 @@ var Bump = (function () {
           if (a.circular && b.circular) {
             //They're circles
             return circleVsCircle(a, b);
-          } else if (a.circular && !b.circular ||) {
+          } else if (a.circular && !b.circular) {
             //The first one is a circle and the second is a rectangle
             return circleVsRectangle(a, b);
           } else if (!a.circular && b.circular) {
             return circleVsRectangle(b, a);
-          ) else {
+          } else {
             //They're rectangles
             return rectangleVsRectangle(a, b);
           }

@@ -128,7 +128,24 @@ Character.prototype.takeDamage = function(){
 }
 
 Character.prototype.move = function(map){
+  var x = this.sprite.x;
+  var y = this.sprite.y;
+  var _this = this;
+
   this.x += this.vx;
+  var movedX = false;
+  bump.hit(this.sprite, map.wallSprites, true, false, true, function(collision, wall) {
+    if (movedX) return;
+
+    // calculate how much the sprite moved
+    var dx = x - _this.sprite.x;
+    _this.sprite.x = x;
+    _this.x -= dx;
+    movedX = true;
+    console.log('hi');
+  });
+
+
   this.y += this.vy;
 
   for (var i = map.wallSprites.length - 1; i >= 0; i--) {
