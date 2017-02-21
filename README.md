@@ -1,9 +1,11 @@
 # miniscape
 
 ## TODO
-* Set up socket
-* Build objects on server side
-* Set up database
+* Write collision functions
+* Complete `Projectiles` and `Characters` on the client
+* Scaffold storyboards/scenes
+* Prototype multiplayer
+* Build server models for instances etc.
 
 ## Proposed init flow
 
