@@ -23,8 +23,6 @@ var Projectile = function(sprite, x, y, vx, vy, from, options){
   rect.endFill();
   this.addChild(rect);
   this.swapChildren(rect, sprite);
-
-  this.sprite.circular = true;
 }
 
 Projectile.prototype = Object.create(PIXI.Container.prototype);

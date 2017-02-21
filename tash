@@ -1,0 +1,50 @@
+[1mdiff --git a/client/js/game.js b/client/js/game.js[m
+[1mindex b09cefe..e7b0a9e 100644[m
+[1m--- a/client/js/game.js[m
+[1m+++ b/client/js/game.js[m
+[36m@@ -73,11 +73,12 @@[m [mvar updateProjectiles = function() {[m
+       var character = Layers.getLayer('characters').children[j];[m
+       if (projectile.from === character.name ||[m
+           projectile.hit.indexOf(character.name) != -1){[m
+[32m+[m[32m        var charCollision = Collisions.hit(projectile.sprite, character.sprite);[m
+         continue;[m
+       }[m
+ [m
+       //var charCollision = bump.hit(projectile.children[0], character.sprite, false, false, true);[m
+[31m-      var charCollision = Collisions.hit(projectile.children[1], character.sprite);[m
+[32m+[m[32m      var charCollision = Collisions.hit(projectile.sprite, character.sprite);[m
+       if (charCollision){[m
+         projectile.hit.push(character.name);[m
+         character.takeDamage();[m
+[1mdiff --git a/client/js/utils/collisions.js b/client/js/utils/collisions.js[m
+[1mindex 8b44987..19a4feb 100644[m
+[1m--- a/client/js/utils/collisions.js[m
+[1m+++ b/client/js/utils/collisions.js[m
+[36m@@ -4,10 +4,26 @@[m [mclass Collisions{[m
+   // a is circle, b is rectangle[m
+   hitCircleRectangle(a, b){[m
+     var aGlobal = a.toGlobal(new PIXI.Point(a.width/2, a.width/2))[m
+[31m-    var bGlobal = b.toGlobal(new PIXI.Point(a.width/2, a.height/2));[m
+[32m+[m[32m    var bGlobal = b.toGlobal(new PIXI.Point(0, 0));[m
+     var deltaX = aGlobal.x - Math.max(bGlobal.x, Math.min(aGlobal.x, bGlobal.x + b.width));[m
+     var deltaY = aGlobal.y - Math.max(bGlobal.y, Math.min(aGlobal.y, bGlobal.y + b.height));[m
+     return (deltaX * deltaX + deltaY * deltaY) < (a.width/2 * a.width/2);[m
+[32m+[m
+[32m+[m[32m    //var cirX = Math.abs(aGlobal.x - bGlobal.x);[m
+[32m+[m
+[32m+[m[32m    // circleDistance.x = abs(circle.x - rect.x);[m
+[32m+[m[32m    // circleDistance.y = abs(circle.y - rect.y);[m
+[32m+[m
+[32m+[m[32m    // if (circleDistance.x > (rect.width/2 + circle.r)) { return false; }[m
+[32m+[m[32m    // if (circleDistance.y > (rect.height/2 + circle.r)) { return false; }[m
+[32m+[m
+[32m+[m[32m    // if (circleDistance.x <= (rect.width/2)) { return true; }[m[41m [m
+[32m+[m[32m    // if (circleDistance.y <= (rect.height/2)) { return true; }[m
+[32m+[m
+[32m+[m[32m    // cornerDistance_sq = (circleDistance.x - rect.width/2)^2 +[m
+[32m+[m[32m    //                      (circleDistance.y - rect.height/2)^2;[m
+[32m+[m
+[32m+[m[32m    // return (cornerDistance_sq <= (circle.r^2));[m
+   }[m
+  [m
+   hit(a, b){[m

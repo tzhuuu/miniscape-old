@@ -146,16 +146,16 @@ var setup = function() {
     "X                                            X",
     "X                                            X",
     "X                                            X",
+    "X                      X                     X",
     "X                                            X",
     "X                                            X",
     "X                                            X",
     "X                                            X",
-    "X                                            X",
-    "X                                            X",
-    "X                                            X",
-    "X                                            X",
-    "X                                            X",
-    "X                                            X",
+    "X                XXXX                        X",
+    "X               X    X                       X",
+    "X              X      X                      X",
+    "X               X     X                      X",
+    "X                XXXXX                       X",
     "X                                            X",
     "X                                            X",
     "X                                            X",
@@ -245,10 +245,10 @@ var setup = function() {
   krampus.zOrder = 10;
 
   CharacterStore.addCharacter('isaac', isaac);
-  CharacterStore.addCharacter('krampus', krampus);
+  // CharacterStore.addCharacter('krampus', krampus);
 
   Layers.getLayer('characters').addChild(isaac);
-  Layers.getLayer('characters').addChild(krampus);
+  // Layers.getLayer('characters').addChild(krampus);
 
   // rerender stage
   renderer.render(stage);

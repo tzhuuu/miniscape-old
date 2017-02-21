@@ -1,6 +1,7 @@
 // create the health bar
 
 var HealthBar = function(spriteContainer, sprite) {
+  this.sprite = sprite;
   this.topContainer = spriteContainer;
   this.container = new PIXI.DisplayObjectContainer();
 

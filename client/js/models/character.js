@@ -32,22 +32,38 @@ var Character = function(options) {
   this.addChild(this.sprite);
   // this.height += 10;
 
-  var rect = new PIXI.Graphics();
-  rect.beginFill(0xFFFFFF);
-  rect.drawRect(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height);
-  rect.endFill();
-  this.addChild(rect);
-  this.swapChildren(rect, this.sprite);
+  // attach a healthbar
+  this.healthBar = new HealthBar(this, this.sprite);
+  this.addChild(this.healthBar.container);
+  this.displayGroup = Layers.getDisplayGroup('foreground');
+
+  // var rect = new PIXI.Graphics();
+  // rect.beginFill(0xFFFFFF);
+  // rect.drawRect(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height);
+  // rect.endFill();
+  // this.addChild(rect);
+  // this.swapChildren(rect, this.sprite);
+
+  this.moveBox = new PIXI.Sprite();
+  this.moveBox.height = this.sprite.height;
+  this.moveBox.y = 0;//this.moveBox.height;
+  this.moveBox.x = 0;
+  this.moveBox.width = this.width;
+  this.addChild(this.moveBox);
+
+  // var rect2 = new PIXI.Graphics();
+  // rect2.beginFill(0xFF0000);
+  // rect2.drawRect(this.moveBox.x, this.moveBox.y, this.moveBox.width, this.moveBox.height);
+  // console.log(this.moveBox.x, this.moveBox.y, this.moveBox.width, this.moveBox.height);
+  // rect2.endFill();
+  // this.addChild(rect2);
+  // this.swapChildren(this.sprite, rect2);
 
   // console.log(this.container.w)
 
   this.vx = 0;
   this.vy = 0;
 
-  // attach a healthbar
-  this.healthBar = new HealthBar(this, this.sprite);
-  this.addChild(this.healthBar.container);
-  this.displayGroup = Layers.getDisplayGroup('foreground');
 }
 
 Character.prototype = Object.create(PIXI.Container.prototype);
@@ -128,36 +144,109 @@ Character.prototype.takeDamage = function(){
 }
 
 Character.prototype.move = function(map){
-  var x = this.sprite.x;
-  var y = this.sprite.y;
-  var _this = this;
 
+  // this.x += this.vx;
+  // this.y += this.vy;
+
+  // var wallsHit = [];
+  // for (var i = map.wallSprites.length - 1; i >= 0; i--) {
+  // 	var s = map.wallSprites[i];
+  //   if (bump.hit(this.sprite, s, false, false, true)) {
+  //     wallsHit.push({
+  //       'wall': wall,
+  //       'pos': wall.toGlobal(new PIXI.Point(wall.width/2, wall.height/2))
+  //     });
+  //     this.x -= this.vx;
+  //     this.y -= this.vy;
+  //     this.zOrder = -(this.y + this.height/2);
+  // 		return;
+  // 	}
+  // }
+
+  // move
   this.x += this.vx;
-  var movedX = false;
-  bump.hit(this.sprite, map.wallSprites, true, false, true, function(collision, wall) {
-    if (movedX) return;
-
-    // calculate how much the sprite moved
-    var dx = x - _this.sprite.x;
-    _this.sprite.x = x;
-    _this.x -= dx;
-    movedX = true;
-    console.log('hi');
-  });
-
-
   this.y += this.vy;
 
-  for (var i = map.wallSprites.length - 1; i >= 0; i--) {
-  	var s = map.wallSprites[i];
-    if (bump.hit(this.sprite, s, false, false, true)) {
-      this.x -= this.vx;
-      this.y -= this.vy;
-      this.zOrder = -(this.y + this.height/2);
-  		return;
-  	}
+  var wallsHit = [];
+  bump.hit(this.moveBox, map.wallSprites, false, false, true, function(collision, wall){
+    wallsHit.push({
+      "wall": wall,
+      "pos": wall.toGlobal(new PIXI.Point(wall.width/2, wall.height/2))
+    });
+  });
+  if (wallsHit){
+  
+    var spritePos = this.moveBox.toGlobal(new PIXI.Point(this.moveBox.width/2, this.moveBox.height/2));
+    var _this = this;
+    wallsHit.map(function(wall){
+      var deltaY = spritePos.y - wall.pos.y;
+      var deltaX = spritePos.x - wall.pos.x;
+      var distance = deltaY * deltaY + deltaX * deltaX;
+      wall.distance = distance;
+    });
+
+    wallsHit.sort((a,b) => a.distance - b.distance);
+
+    for (var i=0; i<wallsHit.length; i++) {
+      var wall = wallsHit[i].wall;
+      var x = this.moveBox.x;
+      var y = this.moveBox.y;
+      var _this = this;
+      bump.hit(this.moveBox, wall, true, false, true, function(collision, wall) {
+        var dx = x - _this.moveBox.x;
+        var dy = y - _this.moveBox.y;
+
+        _this.moveBox.x = x;
+        _this.moveBox.y = y;
+
+        _this.x -= dx;
+        _this.y -= dy;
+      });
+    }
+
   }
-  this.zOrder = -(this.y + this.height/2);
+
+  //   var collideWith = wallsHit[0];
+
+  //   if (Math.abs(this.vx) > 0 && Math.abs(this.vy) > 0){
+  //     var diffY = spritePos.y - collideWith.pos.y;
+  //     var diffX = spritePos.x - collideWith.pos.x;
+  //     if (Math.abs(diffY) > Math.abs(diffX)){
+
+  //     }
+  //   }
+
+  // }
+  // var x = this.sprite.x;
+  // var y = this.sprite.y;
+  // var _this = this;
+
+  // this.x += this.vx;
+  // var movedX = false;
+  // bump.hit(this.sprite, map.wallSprites, true, false, true, function(collision, wall) {
+  //   if (movedX) return;
+
+  //   // calculate how much the sprite moved
+  //   var dx = x - _this.sprite.x;
+  //   _this.sprite.x = x;
+  //   _this.x -= dx;
+  //   movedX = true;
+  //   console.log('hi');
+  // });
+
+
+  // this.y += this.vy;
+
+  // for (var i = map.wallSprites.length - 1; i >= 0; i--) {
+  // 	var s = map.wallSprites[i];
+  //   if (bump.hit(this.sprite, s, false, false, true)) {
+  //     this.x -= this.vx;
+  //     this.y -= this.vy;
+  //     this.zOrder = -(this.y + this.height/2);
+  // 		return;
+  // 	}
+  // }
+  // this.zOrder = -(this.y + this.height/2);
 }
 
 Character.prototype.shoot = function(){
