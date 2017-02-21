@@ -1,6 +1,7 @@
 var Layers = require('./layers');
 var Map = require('./map');
 var Camera = require('./camera');
+var Collisions = require('./utils/collisions');
 
 var Character = require('./models/character');
 var Projectile = require('./models/projectile');
@@ -75,7 +76,8 @@ var updateProjectiles = function() {
         continue;
       }
 
-      var charCollision = bump.hit(projectile.children[0], character.sprite, false, false, true);
+      //var charCollision = bump.hit(projectile.children[0], character.sprite, false, false, true);
+      var charCollision = Collisions.hit(projectile.children[1], character.sprite);
       if (charCollision){
         projectile.hit.push(character.name);
         character.takeDamage();
