@@ -1488,6 +1488,7 @@ var Bump = (function () {
             //The first one is a circle and the second is a rectangle
             return circleVsRectangle(a, b);
           } else if (!a.circular && b.circular) {
+            console.log('ahahahaa');
             return circleVsRectangle(b, a);
           } else {
             //They're rectangles

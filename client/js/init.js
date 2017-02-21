@@ -140,29 +140,29 @@ var setup = function() {
     water: PIXI.loader.resources['./imgs/ground67.png'].texture,
   }
   mapString = [
-    "            XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "                                       X",
-    "X                                      X",
-    "X           C                          X"
+    "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
   ];
   // mapString = [
   //   "XXXXXXXXXXXXXX",
@@ -178,7 +178,7 @@ var setup = function() {
   var map = Map.createMap(mapString, {' ': 'base', 'X' : 'wall', 'C': 'water'},
                           textures, mapContainer, Settings.unit);
   Map.addMap('town', map);
-  
+
   var bulletGraphic = new PIXI.Graphics();
   bulletGraphic.beginFill(0x9966FF);
   bulletGraphic.drawCircle(10, 10, 10);
