@@ -8,6 +8,7 @@ var ReactDOM = require('react-dom');
 global.jQuery = require('jquery');
 global.$ = jQuery;
 require('./libraries/pixi.min.js');
+require('./libraries/pixi-display.min.js');
 // require('./libraries/pixi.js');
 global.Bump = require('./libraries/bump.js');
 // global.Phaser = require('./libraries/phaser.min.js');

@@ -54,7 +54,9 @@ var initPixi = function() {
   renderer.autoResize = true;
 
   // Enforce a 16:9 ratio
-  Settings.unit = Math.floor(Math.min(window.innerWidth/16, window.innerHeight/9));
+  var widthRatio = 48;
+  var heightRatio = 27;
+  Settings.unit = Math.floor(Math.min(window.innerWidth/widthRatio, window.innerHeight/heightRatio));
 
   renderer.resize(window.innerWidth, window.innerHeight);
 
@@ -87,12 +89,28 @@ var loadAssets = function() {
 
 var loadMiniscape = function() {
 
-  // create the container layers
+  Config.displayGroups = [
+    {
+      name: 'foreground',
+      zOrder: 0
+    },
+    {
+      name: 'background',
+      zOrder: 1
+    }
+  ]
+
+  // create the display groups and scene graph layers
   Layers.setStage(stage);
   Layers.setRenderer(renderer);
-  for (var i = 0; i < Config.layers.length; i++) {
+  stage.displayList = new PIXI.DisplayList();
+  for (var i = 0; i < Config.displayGroups.length; i++) {
+    var dg= Config.displayGroups[i];
+    Layers.addDisplayGroup(dg.name, dg.zOrder);
+  }
+  for (i = 0; i < Config.layers.length; i++) {
     var l = Config.layers[i];
-    Layers.addLayer(l.name, l.zIndex, l.parent);
+    Layers.addLayer(l.name, l.zOrder, l.parent);
   }
 
   // load extensions
@@ -121,42 +139,42 @@ var setup = function() {
     wall: PIXI.loader.resources['./imgs/ground62.png'].texture,
     water: PIXI.loader.resources['./imgs/ground67.png'].texture,
   }
-  // mapString = [
-  //   "            XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-  //   "                                       X",
-  //   "                                       X",
-  //   "                                       X",
-  //   "                                       X",
-  //   "                                       X",
-  //   "                                       X",
-  //   "                                       X",
-  //   "                                       X",
-  //   "                                       X",
-  //   "                                       X",
-  //   "                                       X",
-  //   "                                       X",
-  //   "                                       X",
-  //   "                                       X",
-  //   "                                       X",
-  //   "                                       X",
-  //   "                                       X",
-  //   "                                       X",
-  //   "                                       X",
-  //   "                                       X",
-  //   "X                                      X",
-  //   "X           C                          X"
-  // ];
   mapString = [
-    "XXXXXXXXXXXXXX",
-    "X            X",
-    "X            X",
-    "X            X",
-    "X            X",
-    "X            X",
-    "X            X",
-    "X            X",
-    "XXXXXXXXXXXXXX",
-  ]
+    "            XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "                                       X",
+    "X                                      X",
+    "X           C                          X"
+  ];
+  // mapString = [
+  //   "XXXXXXXXXXXXXX",
+  //   "X            X",
+  //   "X            X",
+  //   "X            X",
+  //   "X            X",
+  //   "X            X",
+  //   "X            X",
+  //   "X            X",
+  //   "XXXXXXXXXXXXXX",
+  // ]
   var map = Map.createMap(mapString, {' ': 'base', 'X' : 'wall', 'C': 'water'},
                           textures, mapContainer, Settings.unit);
   Map.addMap('town', map);
@@ -206,6 +224,9 @@ var setup = function() {
     'projectileOptions': growthProjectile
   });
 
+  isaac.zOrder = 15;
+  krampus.zOrder = 10;
+
   CharacterStore.addCharacter('isaac', isaac);
   CharacterStore.addCharacter('krampus', krampus);
 
@@ -214,7 +235,6 @@ var setup = function() {
 
   // rerender stage
   renderer.render(stage);
-  stage.updateLayersOrder();
 
   initControls();
 }

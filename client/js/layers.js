@@ -2,6 +2,7 @@ class Layers {
 
   constructor() {
     this.layers = {};
+    this.displayGroups = {};
   }
 
   setRenderer(renderer) {
@@ -10,31 +11,26 @@ class Layers {
 
   setStage(stage) {
     this.layers['stage'] = stage;
-    this.attachUpdateLayersOrder(stage);
   }
 
-  addLayer(name, zIndex, parent) {
+  addLayer(name, zOrder, parent) {
     var parentLayer = this.layers[parent];
     var layer = new PIXI.Container();
     this.layers[name] = layer;
-    layer.zIndex = zIndex || 0;
     parentLayer.addChild(layer);
-    parentLayer.updateLayersOrder();
-    this.attachUpdateLayersOrder(layer);
   }
 
-  attachUpdateLayersOrder(layer) {
-    layer.updateLayersOrder = function () {
-      layer.children.sort(function(a,b) {
-          a.zIndex = a.zIndex || 0;
-          b.zIndex = b.zIndex || 0;
-          return b.zIndex - a.zIndex
-      });
-    };
+  addDisplayGroup(name, zOrder) {
+    var displayGroup = new PIXI.DisplayGroup(-zOrder, true);
+    this.displayGroups[name] = displayGroup
   }
 
   getLayer(name) {
     return this.layers[name];
+  }
+
+  getDisplayGroup(name) {
+    return this.displayGroups[name];
   }
 }
 

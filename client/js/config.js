@@ -13,35 +13,40 @@ Config.assets = {
   ]
 }
 
+Config.displayGroups = [
+  {
+    name: 'foreground',
+    zOrder: 0
+  },
+  {
+    name: 'background',
+    zOrder: 1
+  }
+]
+
 Config.layers = [
   {
     name: 'camera',
-    zIndex: 0,
     parent: 'stage'
   },
   {
     name: 'foreground',
-    zIndex: 0,
     parent: 'camera'
   },
   {
     name: 'background',
-    zIndex: 10,
     parent: 'camera'
   },
   {
     name: 'characters',
-    zIndex: 0,
     parent: 'foreground'
   },
   {
     name: 'projectiles',
-    zIndex: -1,
     parent: 'foreground'
   },
   {
     name: 'items',
-    zIndex: 1,
     parent: 'foreground'
   }
 ]
