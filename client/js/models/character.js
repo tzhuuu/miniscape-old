@@ -47,6 +47,7 @@ var Character = function(options) {
   // attach a healthbar
   this.healthBar = new HealthBar(this, this.sprite);
   this.addChild(this.healthBar.container);
+  this.displayGroup = Layers.getDisplayGroup('foreground');
 }
 
 Character.prototype = Object.create(PIXI.Container.prototype);
@@ -135,9 +136,11 @@ Character.prototype.move = function(map){
     if (bump.hit(this.sprite, s, false, false, true)) {
       this.x -= this.vx;
       this.y -= this.vy;
+      this.zOrder = -(this.y + this.height/2);
   		return;
   	}
   }
+  this.zOrder = -(this.y + this.height/2);
 }
 
 Character.prototype.shoot = function(){

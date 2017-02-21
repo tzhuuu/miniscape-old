@@ -31,6 +31,7 @@ Projectile.prototype.constructor = Projectile;
 Projectile.prototype.move = function() {
   this.x += this.vx;
   this.y += this.vy;
+  this.zOrder = -(this.y + this.height/2 - 5);
 }
 
 Projectile.prototype.grow = function() {
@@ -45,6 +46,7 @@ Projectile.make = function(x, y, vx, vy, from, options) {
   circle.endFill();
   var projectile = new Projectile(circle, x, y, vx, vy, from, options);
   Layers.getLayer('projectiles').addChild(projectile);
+  projectile.displayGroup = Layers.getDisplayGroup('foreground');
 }
 
 module.exports = Projectile;

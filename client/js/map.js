@@ -1,3 +1,5 @@
+var Layers = require('./layers');
+
 class Maps {
 
   constructor() {
@@ -61,6 +63,8 @@ class Maps {
       width: ground.width * mapString[0].length,
       height: ground.height * mapString.length
     }
+    map.container = container;
+    container.displayGroup = Layers.getDisplayGroup('background');
     return map;
   }
 }
@@ -68,6 +72,7 @@ class Maps {
 // map object definition
 var Map = function(unit) {
   this.unit = unit;
+  this.container = null;
   this.textures = {};
   this.npcs = [];
   this.wallSprites = [];
