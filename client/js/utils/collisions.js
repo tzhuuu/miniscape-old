@@ -26,7 +26,7 @@ class Collisions{
     var bBottomRight = b.toGlobal(new PIXI.Point(b.width, b.height));
 
     // check a.top is in between b.top and b.bottom
-    if (b.flags['bottom']){
+    if (b.flags.bottom){
       if (aTopLeft.y > bTopLeft.y && aTopLeft.y < bBottomRight.y) {
         // 
       }
