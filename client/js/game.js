@@ -48,7 +48,12 @@ var updateCharacters = function() {
     var character = Layers.getLayer('characters').children[i];
     character.move(Map.getMap('town'));
     if (character.isShooting){
-      character.shoot();
+      if (character.shootsAt){
+        character.shootAt(character.shootsAt);
+      }
+      else{
+        character.shoot();
+      }
     }
   }
 }
