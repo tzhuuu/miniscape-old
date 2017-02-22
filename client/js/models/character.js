@@ -19,9 +19,15 @@ var Character = function(options) {
   this.bulletSpeed = options.bulletSpeed || 0;
   this.isShooting = options.isShooting || false;
   this.projectileOptions = options.projectileOptions || {};
-  this.lastShot = Date.now();
+  this.lastShot = 0;
   this.shootsAt = options.shootsAt || null;
   this.bounce = options.bounce || null;
+  this.player = options.player || false;
+
+  this.poweredUp = false;
+  this.powerUpDuration = 0;
+  this.powerUpPickupTime = 0;
+  this.beforePowerUp = {};
   
   for (var p in options) {
     if (!options.hasOwnProperty(p)) continue;
@@ -159,6 +165,13 @@ Character.prototype.move = function(map){
     }
     else{
       bump.customRectangleCollision(this.moveBox, map.wallSprites[i], false, true, this);
+    }
+  }
+  var items = Layers.getLayer('items').children;
+  for (i=0; i<items.length; i++){
+    if (this.player && bump.hit(this.sprite, items[i].sprite, false, false, true)){
+      items[i].activate(this);
+      Layers.getLayer('items').removeChild(items[i]);
     }
   }
   

@@ -27,11 +27,12 @@ Projectile.prototype.move = function(map) {
   this.zOrder = -(this.y);
 
   // compute collisions
-  for (var i=0; i<map.wallSprites.length; i++) {
-    if (bump.hit(this.sprite, map.wallSprites[i], false, false, true)){
-      Layers.getLayer('projectiles').removeChild(this);
-    }
-  }
+  // for (var i=0; i<map.wallSprites.length; i++) {
+  //   if (bump.hit(this.sprite, map.wallSprites[i], false, false, true)){
+  //     Layers.getLayer('projectiles').removeChild(this);
+  //   }
+  // }
+
 }
 
 Projectile.prototype.grow = function() {
