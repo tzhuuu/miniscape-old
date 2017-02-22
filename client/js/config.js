@@ -52,6 +52,10 @@ Config.layers = [
   {
     name: 'items',
     parent: 'foreground'
+  },
+  {
+    name: 'items',
+    parent: 'foreground'
   }
 ]
 

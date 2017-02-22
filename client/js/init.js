@@ -3,6 +3,7 @@ global.bump = new Bump(PIXI);
 
 var Character = require('./models/character');
 var Projectile = require('./models/projectile');
+var Item = require('./models/item');
 var Hud = require('./models/hud');
 
 // requires
@@ -268,7 +269,8 @@ var setup = function() {
     'bulletSpeed': 8,
     'shotSpeed': 200,
     'isShooting': false,
-    'projectileOptions': basicProjectile
+    'projectileOptions': basicProjectile,
+    'player': true
   });
 
   var krampus = new Character({
@@ -278,14 +280,15 @@ var setup = function() {
     'y': 0,
     'speed': 3,
     'faceDir': 'down',
-    'bulletSpeed': 2,
-    'shotSpeed': 800,
+    'bulletSpeed': 2.2,
+    'shotSpeed': 700,
     'isShooting': true,
     'projectileOptions': growthProjectile,
-    'vx': 1,
-    'vy': 1,
+    'vx': 1.5,
+    'vy': 2,
     'shootsAt': isaac,
-    'bounce': true
+    'bounce': true,
+    'player': false
   });
 
   isaac.zOrder = 15;
@@ -296,6 +299,18 @@ var setup = function() {
 
   Layers.getLayer('characters').addChild(isaac);
   Layers.getLayer('characters').addChild(krampus);
+
+  var powerUpGraphic = new PIXI.Graphics();
+  powerUpGraphic.beginFill(0xFFFF99);
+  powerUpGraphic.drawCircle(10, 10, 10);
+  powerUpGraphic.endFill();
+  var powerUpTexture = PIXI.RenderTexture.create(powerUpGraphic.width, powerUpGraphic.height);
+  renderer.render(powerUpGraphic, powerUpTexture);
+
+  var powerUp = new Item({
+    'texture': powerUpTexture
+  })
+  Layers.getLayer('items').addChild(powerUp);
 
   // rerender stage
   renderer.render(stage);

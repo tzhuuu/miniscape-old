@@ -55,6 +55,18 @@ var updateCharacters = function() {
         character.shoot();
       }
     }
+
+    // check powerup duration
+    if (character.poweredUp){
+      if (Date.now() - character.powerUpDuration > character.powerUpPickupTime){
+        console.log('deactivate');
+        character.poweredUp = false;
+        for (var p in character.beforePowerUp){
+          if (!character.beforePowerUp.hasOwnProperty(p)) continue;
+          character[p] = character.beforePowerUp[p];
+        }
+      }
+    }
   }
 }
 
@@ -62,13 +74,13 @@ var updateProjectiles = function() {
   // move projectiles
   for (var i=0; i<Layers.getLayer('projectiles').children.length; i++){
     var projectile = Layers.getLayer('projectiles').children[i];
-    projectile.move();
+    projectile.move(Map.getMap('town'));
 
     if (projectile.growthRate > 0){
       projectile.grow();
     }
 
-    // check collision
+    // temporary cleanup for out of bounds projectiles while we fix collision lag
     var boundsCollision = bump.contain(projectile,
                           {x: -25, y: -25, width: window.innerWidth + 50, height: window.innerHeight + 50});
     if (boundsCollision){
@@ -81,12 +93,7 @@ var updateProjectiles = function() {
         continue;
       }
 
-// <<<<<<< HEAD
       var charCollision = bump.hit(projectile.sprite, character.sprite, false, false, true);
-// =======
-//       //var charCollision = bump.hit(projectile.children[0], character.sprite, false, false, true);
-//       var charCollision = Collisions.hit(projectile.children[1], character.sprite);
-// >>>>>>> ba39495f0b5d1eb62d22661568eff5859835e055
       if (charCollision){
         projectile.hit.push(character.name);
         character.takeDamage();
