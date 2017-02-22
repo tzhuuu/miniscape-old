@@ -182,6 +182,28 @@ var setup = function() {
     "X                                            X",
     "X                                            X",
     "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
+    "X                                            X",
     "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
   ];
   // mapString = [
@@ -203,7 +225,9 @@ var setup = function() {
   var hud = new Hud();
   Layers.getLayer('hud').addChild(hud);
   var camera = Layers.getLayer('camera');
+  var ratio = camera.height / camera.width;
   camera.height -= Layers.getLayer('hud').height;
+  camera.width = camera.height / ratio;
 
   var basicProjectile = {
     'radius': 10,
