@@ -165,53 +165,30 @@ Character.prototype.move = function(timeDelta, map){
 
   // move
 
-  var multiplyer = timeDelta / 1000;
+  var multiplier = timeDelta / 1000;
   // start acceleration
   if (this.startedMoving && this.startedMoving < this.acceleration) {
-    multiplyer *= this.startedMoving / this.acceleration;
+    multiplier *= this.startedMoving / this.acceleration;
     this.startedMoving += timeDelta;
   }
 
   // stop deceleration
   if (this.stoppedMoving && this.stoppedMoving > this.startSpeed) {
-    multiplyer *= this.stoppedMoving / this.acceleration;
+    multiplier *= this.stoppedMoving / this.acceleration;
     this.stoppedMoving -= timeDelta;
-    this.x += this.lastvx * multiplyer;
-    this.y += this.lastvy * multiplyer;
+    this.x += this.lastvx * multiplier;
+    this.y += this.lastvy * multiplier;
 
   } else {
-    this.x += this.vx * multiplyer;
-    this.y += this.vy * multiplyer;
+    this.x += this.vx * multiplier;
+    this.y += this.vy * multiplier;
   }
-
-
-
-  // // get list of walls hit
-  // var wallsHit = [];
-  // bump.hit(this.moveBox, map.wallSprites, false, false, true, function(collision, wall){
-  //   wallsHit.push({
-  //     "wall": wall,
-  //     "pos": wall.toGlobal(new PIXI.Point(wall.width/2, wall.height/2))
-  //   });
-  // });
-  //
-  // // if hit >=1 wall
-  // if (wallsHit){
-  //   var spritePos = this.moveBox.toGlobal(new PIXI.Point(this.moveBox.width/2, this.moveBox.height/2));
-  //   var _this = this;
-  //   wallsHit.map(function(wall){
-  //     var deltaY = spritePos.y - wall.pos.y;
-  //     var deltaX = spritePos.x - wall.pos.x;
-  //     var distance = deltaY * deltaY + deltaX * deltaX;
-  //     wall.distance = distance;
-  //   });
-  //
-  //   // sort walls by distance
-  //   wallsHit.sort((a,b) => a.distance - b.distance);
 
     // compute collisions
     for (var i=0; i<map.wallSprites.length; i++) {
-      bump.customRectangleCollision(this.moveBox, map.wallSprites[i], false, true, this);
+      if (bump.customRectangleCollision(this.moveBox, map.wallSprites[i], false, true, this)) {
+
+      }
     }
 
   // }
