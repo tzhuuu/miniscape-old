@@ -30,6 +30,10 @@ Config.layers = [
     parent: 'stage'
   },
   {
+    name: 'hud',
+    parent: 'stage'
+  },
+  {
     name: 'foreground',
     parent: 'camera'
   },

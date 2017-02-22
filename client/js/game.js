@@ -77,8 +77,7 @@ var updateProjectiles = function() {
       }
 
 // <<<<<<< HEAD
-      projectile.children[1].circular = true;
-      var charCollision = bump.hit(projectile.children[1], character.sprite, false, false, true);
+      var charCollision = bump.hit(projectile.sprite, character.sprite, false, false, true);
 // =======
 //       //var charCollision = bump.hit(projectile.children[0], character.sprite, false, false, true);
 //       var charCollision = Collisions.hit(projectile.children[1], character.sprite);

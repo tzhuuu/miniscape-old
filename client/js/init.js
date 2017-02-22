@@ -3,6 +3,7 @@ global.bump = new Bump(PIXI);
 
 var Character = require('./models/character');
 var Projectile = require('./models/projectile');
+var Hud = require('./models/hud');
 
 // requires
 var Q = require('q');
@@ -179,6 +180,9 @@ var setup = function() {
                           textures, mapContainer, Settings.unit);
   Map.addMap('town', map);
 
+  var hud = new Hud();
+  Layers.getLayer('hud').addChild(hud);
+
   var basicProjectile = {
     'radius': 10,
     'bulletTexture': bulletTexture
@@ -203,7 +207,7 @@ var setup = function() {
   }
   var growthProjectile = {
     'radius': 10,
-    'growthRate': 1.0025,
+    'growthRate': 1.00025,
     'bulletTexture': bulletTexture
   }
 
@@ -228,8 +232,8 @@ var setup = function() {
     'y': 0,
     'speed': 0,
     'faceDir': 'down',
-    'bulletSpeed': 0,
-    'shotSpeed': 6000,
+    'bulletSpeed': 2,
+    'shotSpeed': 2000,
     'isShooting': true,
     'projectileOptions': growthProjectile
   });
@@ -238,10 +242,10 @@ var setup = function() {
   krampus.zOrder = 10;
 
   CharacterStore.addCharacter('isaac', isaac);
-  // CharacterStore.addCharacter('krampus', krampus);
+  CharacterStore.addCharacter('krampus', krampus);
 
   Layers.getLayer('characters').addChild(isaac);
-  // Layers.getLayer('characters').addChild(krampus);
+  Layers.getLayer('characters').addChild(krampus);
 
   // rerender stage
   renderer.render(stage);
