@@ -62,7 +62,7 @@ var updateProjectiles = function() {
   // move projectiles
   for (var i=0; i<Layers.getLayer('projectiles').children.length; i++){
     var projectile = Layers.getLayer('projectiles').children[i];
-    projectile.move();
+    projectile.move(Map.getMap('town'));
 
     if (projectile.growthRate > 0){
       projectile.grow();

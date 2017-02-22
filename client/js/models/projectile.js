@@ -21,10 +21,17 @@ var Projectile = function(sprite, x, y, vx, vy, from, options){
 Projectile.prototype = Object.create(PIXI.Container.prototype);
 Projectile.prototype.constructor = Projectile;
 
-Projectile.prototype.move = function() {
+Projectile.prototype.move = function(map) {
   this.x += this.vx;
   this.y += this.vy;
   this.zOrder = -(this.y);
+
+  // compute collisions
+  for (var i=0; i<map.wallSprites.length; i++) {
+    if (bump.hit(this.sprite, map.wallSprites[i], false, false, true)){
+      Layers.getLayer('projectiles').removeChild(this);
+    }
+  }
 }
 
 Projectile.prototype.grow = function() {
