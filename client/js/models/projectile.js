@@ -21,9 +21,10 @@ var Projectile = function(sprite, x, y, vx, vy, from, options){
 Projectile.prototype = Object.create(PIXI.Container.prototype);
 Projectile.prototype.constructor = Projectile;
 
-Projectile.prototype.move = function() {
-  this.x += this.vx;
-  this.y += this.vy;
+Projectile.prototype.move = function(timeDelta) {
+  var multiplyer = timeDelta / 1000;
+  this.x += this.vx * multiplyer;
+  this.y += this.vy * multiplyer;
   this.zOrder = -(this.y);
 }
 

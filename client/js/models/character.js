@@ -13,12 +13,18 @@ var Character = function(options) {
   this.name = options.name || "";
   this.x = options.x * Settings.unit || 0;
   this.y = options.y * Settings.unit || 0;
-  this.speed = options.speed || 100;
+  this.speed = options.speed * Settings.unit || 30 * Settings.unit; // units per second
   this.faceDir = options.faceDir || 'down';
   this.shotSpeed = options.shotSpeed || 1000;
-  this.bulletSpeed = options.bulletSpeed || 0;
+  this.bulletSpeed = options.bulletSpeed * Settings.unit || 0;
   this.isShooting = options.isShooting || false;
   this.projectileOptions = options.projectileOptions || {};
+
+  this.startSpeed = options.startSpeed || 0;  // start speed in milliseconds based off acceleration and speed
+  this.startedMoving = 0;   // acceleration start time for interpolation
+  this.acceleration = options.acceleration || 0;  // time in milliseconds
+  this.stoppedMoving = 0;
+
   this.lastShot = Date.now();
 
   for (var p in options) {
@@ -81,10 +87,17 @@ Character.prototype.setVelocity = function(presses, latest){
     presses[key] = presses.max() + 1;
   }
   if (presses.max() == 0){
+    if (this.stoppedMoving < this.s)
     dir[0] = 0;
     dir[1] = 0;
+    this.startedMoving = 0;
+    this.stoppedMoving = this.acceleration;
   }
   else{
+    if (!this.startedMoving) {
+      this.startedMoving = this.startSpeed;
+      this.stoppedMoving = 0;
+    }
     // 1 = up, 2 = left, 3 = down, 4 = right
     if (presses[1] > presses[3]){
       dir[1] = -1;
@@ -144,11 +157,22 @@ Character.prototype.takeDamage = function(){
   }
 }
 
-Character.prototype.move = function(map){
+Character.prototype.move = function(timeDelta, map){
 
   // move
-  this.x += this.vx;
-  this.y += this.vy;
+
+  var multiplyer = timeDelta / 1000;
+  if (this.startedMoving && this.startedMoving < this.acceleration) {
+    multiplyer *= this.startedMoving / this.acceleration;
+    this.startedMoving += timeDelta;
+  }
+  if (this.stoppedMoving && this.stoppedMoving > this.startSpeed) {
+    multiplyer *= this.stoppedMoving / this.acceleration;
+    this.stoppedMoving -= timeDelta;
+  }
+
+  this.x += this.vx * multiplyer;
+  this.y += this.vy * multiplyer;
 
   // // get list of walls hit
   // var wallsHit = [];
