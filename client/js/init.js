@@ -179,13 +179,6 @@ var setup = function() {
                           textures, mapContainer, Settings.unit);
   Map.addMap('town', map);
 
-  var bulletGraphic = new PIXI.Graphics();
-  bulletGraphic.beginFill(0x9966FF);
-  bulletGraphic.drawCircle(10, 10, 10);
-  bulletGraphic.endFill();
-  var bulletTexture = PIXI.RenderTexture.create(bulletGraphic.width, bulletGraphic.height);
-  renderer.render(bulletGraphic, bulletTexture);
-
   var basicProjectile = {
     'radius': 10,
     'bulletTexture': bulletTexture
@@ -198,7 +191,7 @@ var setup = function() {
   }
 
   var bulletGraphic = new PIXI.Graphics();
-  bulletGraphic.beginFill(0x9966FF);
+  bulletGraphic.beginFill(0xFF0099);
   bulletGraphic.drawCircle(10, 10, 10);
   bulletGraphic.endFill();
   var bulletTexture = PIXI.RenderTexture.create(bulletGraphic.width, bulletGraphic.height);
