@@ -10,9 +10,9 @@ var game = {};
 var camera;
 
 game.play = function(timeDelta){
-  updateCharacters();
-  updateProjectiles();
-  camera.update();
+  updateCharacters(timeDelta);
+  updateProjectiles(timeDelta);
+  camera.update(timeDelta);
   updateFps(timeDelta);
 }
 
@@ -42,11 +42,11 @@ game.setup = function() {
   Layers.getLayer('stage').addChild(fpsText);
 }
 
-var updateCharacters = function() {
+var updateCharacters = function(timeDelta) {
   // move sprites
   for(var i = 0; i < Layers.getLayer('characters').children.length; i++) {
     var character = Layers.getLayer('characters').children[i];
-    character.move(Map.getMap('town'));
+    character.move(timeDelta, Map.getMap('town'));
     if (character.isShooting){
       if (character.shootsAt){
         character.shootAt(character.shootsAt);
@@ -58,14 +58,14 @@ var updateCharacters = function() {
   }
 }
 
-var updateProjectiles = function() {
+var updateProjectiles = function(timeDelta) {
   // move projectiles
   for (var i=0; i<Layers.getLayer('projectiles').children.length; i++){
     var projectile = Layers.getLayer('projectiles').children[i];
-    projectile.move();
+    projectile.move(timeDelta);
 
     if (projectile.growthRate > 0){
-      projectile.grow();
+      projectile.grow(timeDelta);
     }
 
     // check collision

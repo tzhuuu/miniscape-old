@@ -66,7 +66,6 @@ class Maps {
         }
       }
     }
-    console.log(map.wallSprites);
     map.size = {
       width: ground.width * mapString[0].length,
       height: ground.height * mapString.length
