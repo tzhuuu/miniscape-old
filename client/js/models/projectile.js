@@ -16,13 +16,6 @@ var Projectile = function(sprite, x, y, vx, vy, from, options){
 
   // parse options
   this.growthRate = options.growthRate || 0;
-
-  var rect = new PIXI.Graphics();
-  rect.beginFill(0xFFFF00);
-  rect.drawRect(sprite.x, sprite.y, sprite.width, sprite.height);
-  rect.endFill();
-  this.addChild(rect);
-  this.swapChildren(rect, sprite);
 }
 
 Projectile.prototype = Object.create(PIXI.Container.prototype);

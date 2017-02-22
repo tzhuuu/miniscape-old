@@ -45,16 +45,17 @@ var Character = function(options) {
   // this.swapChildren(rect, this.sprite);
 
   this.moveBox = new PIXI.Sprite();
-  this.moveBox.height = this.sprite.height;
-  this.moveBox.y = 0;//this.moveBox.height;
-  this.moveBox.x = 0;
-  this.moveBox.width = this.width;
+  this.moveBox.height = this.sprite.height/4;
+  this.moveBox.y = 3*this.sprite.height/4 + this.healthBar.sprite.y;
+  this.moveBox.x = this.sprite.width/4;
+  this.moveBox.width = this.sprite.width/2;
+
   this.addChild(this.moveBox);
 
   // var rect2 = new PIXI.Graphics();
   // rect2.beginFill(0xFF0000);
   // rect2.drawRect(this.moveBox.x, this.moveBox.y, this.moveBox.width, this.moveBox.height);
-  // console.log(this.moveBox.x, this.moveBox.y, this.moveBox.width, this.moveBox.height);
+  // //console.log(this.moveBox.x, this.moveBox.y, this.moveBox.width, this.moveBox.height);
   // rect2.endFill();
   // this.addChild(rect2);
   // this.swapChildren(this.sprite, rect2);
@@ -144,29 +145,12 @@ Character.prototype.takeDamage = function(){
 }
 
 Character.prototype.move = function(map){
-
-  // this.x += this.vx;
-  // this.y += this.vy;
-
-  // var wallsHit = [];
-  // for (var i = map.wallSprites.length - 1; i >= 0; i--) {
-  // 	var s = map.wallSprites[i];
-  //   if (bump.hit(this.sprite, s, false, false, true)) {
-  //     wallsHit.push({
-  //       'wall': wall,
-  //       'pos': wall.toGlobal(new PIXI.Point(wall.width/2, wall.height/2))
-  //     });
-  //     this.x -= this.vx;
-  //     this.y -= this.vy;
-  //     this.zOrder = -(this.y + this.height/2);
-  // 		return;
-  // 	}
-  // }
-
+  
   // move
   this.x += this.vx;
   this.y += this.vy;
 
+  // get list of walls hit
   var wallsHit = [];
   bump.hit(this.moveBox, map.wallSprites, false, false, true, function(collision, wall){
     wallsHit.push({
@@ -174,8 +158,9 @@ Character.prototype.move = function(map){
       "pos": wall.toGlobal(new PIXI.Point(wall.width/2, wall.height/2))
     });
   });
+
+  // if hit >=1 wall
   if (wallsHit){
-  
     var spritePos = this.moveBox.toGlobal(new PIXI.Point(this.moveBox.width/2, this.moveBox.height/2));
     var _this = this;
     wallsHit.map(function(wall){
@@ -185,68 +170,16 @@ Character.prototype.move = function(map){
       wall.distance = distance;
     });
 
+    // sort walls by distance
     wallsHit.sort((a,b) => a.distance - b.distance);
 
+    // compute collisions
     for (var i=0; i<wallsHit.length; i++) {
       var wall = wallsHit[i].wall;
-      var x = this.moveBox.x;
-      var y = this.moveBox.y;
-      var _this = this;
-      bump.hit(this.moveBox, wall, true, false, true, function(collision, wall) {
-        var dx = x - _this.moveBox.x;
-        var dy = y - _this.moveBox.y;
-
-        _this.moveBox.x = x;
-        _this.moveBox.y = y;
-
-        _this.x -= dx;
-        _this.y -= dy;
-      });
+      var side = bump.customRectangleCollision(this.moveBox, wall, false, true, this);
     }
 
   }
-
-  //   var collideWith = wallsHit[0];
-
-  //   if (Math.abs(this.vx) > 0 && Math.abs(this.vy) > 0){
-  //     var diffY = spritePos.y - collideWith.pos.y;
-  //     var diffX = spritePos.x - collideWith.pos.x;
-  //     if (Math.abs(diffY) > Math.abs(diffX)){
-
-  //     }
-  //   }
-
-  // }
-  // var x = this.sprite.x;
-  // var y = this.sprite.y;
-  // var _this = this;
-
-  // this.x += this.vx;
-  // var movedX = false;
-  // bump.hit(this.sprite, map.wallSprites, true, false, true, function(collision, wall) {
-  //   if (movedX) return;
-
-  //   // calculate how much the sprite moved
-  //   var dx = x - _this.sprite.x;
-  //   _this.sprite.x = x;
-  //   _this.x -= dx;
-  //   movedX = true;
-  //   console.log('hi');
-  // });
-
-
-  // this.y += this.vy;
-
-  // for (var i = map.wallSprites.length - 1; i >= 0; i--) {
-  // 	var s = map.wallSprites[i];
-  //   if (bump.hit(this.sprite, s, false, false, true)) {
-  //     this.x -= this.vx;
-  //     this.y -= this.vy;
-  //     this.zOrder = -(this.y + this.height/2);
-  // 		return;
-  // 	}
-  // }
-  // this.zOrder = -(this.y + this.height/2);
 }
 
 Character.prototype.shoot = function(){

@@ -27,6 +27,7 @@ class Maps {
       screenSize - dimensions of the screen
     */
     var map = new Map(unit);
+    map.textures = textures;
 
     var tWidth = textures.base.width;
     var tHeight = textures.base.height;
@@ -52,6 +53,12 @@ class Maps {
             ground.y = ground.height * i;
             if (c == 'X') {
               map.wallSprites.push(ground);
+              ground.flags = {
+                'top': mapString[i - 1] ? mapString[i - 1].charAt(j) != 'X' : false,  // true if you need to check
+                'bottom': mapString[i + 1] ? mapString[i + 1].charAt(j) != 'X' : false,
+                'left': mapString[i].charAt(j-1) ? mapString[i].charAt(j - 1) != 'X' : false,
+                'right': mapString[i].charAt(j+1) ? mapString[i].charAt(j + 1) != 'X' : false
+              };
             }
             container.addChild(ground);
             break;
@@ -59,6 +66,7 @@ class Maps {
         }
       }
     }
+    console.log(map.wallSprites);
     map.size = {
       width: ground.width * mapString[0].length,
       height: ground.height * mapString.length
