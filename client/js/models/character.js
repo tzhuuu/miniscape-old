@@ -20,7 +20,9 @@ var Character = function(options) {
   this.isShooting = options.isShooting || false;
   this.projectileOptions = options.projectileOptions || {};
   this.lastShot = Date.now();
-
+  this.shootsAt = options.shootsAt || null;
+  this.bounce = options.bounce || null;
+  
   for (var p in options) {
     if (!options.hasOwnProperty(p)) continue;
     this.p = options[p];
@@ -62,8 +64,8 @@ var Character = function(options) {
 
   // console.log(this.container.w)
 
-  this.vx = 0;
-  this.vy = 0;
+  this.vx = options.vx || 0;
+  this.vy = options.vy || 0;
 
 }
 
@@ -152,7 +154,12 @@ Character.prototype.move = function(map){
 
   // compute collisions
   for (var i=0; i<map.wallSprites.length; i++) {
-    bump.customRectangleCollision(this.moveBox, map.wallSprites[i], false, true, this);
+    if (this.bounce){
+      bump.customRectangleCollision(this.moveBox, map.wallSprites[i], true, true, this);
+    }
+    else{
+      bump.customRectangleCollision(this.moveBox, map.wallSprites[i], false, true, this);
+    }
   }
   
   this.zOrder = -(this.y + this.height/2);
@@ -173,6 +180,14 @@ Character.prototype.shoot = function(){
     else{
       Projectile.make(this.x + this.width/2, this.y + this.height/2, this.bulletSpeed, this.vy, this.name, this.projectileOptions);
     }
+  }
+}
+
+Character.prototype.shootAt = function(target){
+  if (Date.now() - this.lastShot > this.shotSpeed){
+    this.lastShot = Date.now();
+    // var distance = Math.pow(Math.pow(this.x - target.x, 2) + Math.pow(this.y - target.y, 2), 1/2);
+    Projectile.make(this.x + this.width/2, this.y + this.height/2, (-this.x + target.x)/50, (-this.y + target.y)/50, this.name, this.projectileOptions);
   }
 }
 

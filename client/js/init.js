@@ -276,12 +276,16 @@ var setup = function() {
     'name': 'krampus',
     'x': 5,
     'y': 0,
-    'speed': 0,
+    'speed': 3,
     'faceDir': 'down',
     'bulletSpeed': 2,
-    'shotSpeed': 2000,
+    'shotSpeed': 800,
     'isShooting': true,
-    'projectileOptions': growthProjectile
+    'projectileOptions': growthProjectile,
+    'vx': 1,
+    'vy': 1,
+    'shootsAt': isaac,
+    'bounce': true
   });
 
   isaac.zOrder = 15;

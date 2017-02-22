@@ -806,6 +806,24 @@ var Bump = (function () {
                 r1.y = r1.y - overlapY;
               }
             }
+            //Bounce
+            if (bounce) {
+              if (sprite){
+                sprite.vy *= -1;
+              }
+              else{
+                r1.vy *= -1;
+              }
+
+              /*Alternative
+              //Find the bounce surface's vx and vy properties
+              var s = {};
+              s.vx = r2.x - r2.x + r2.width;
+              s.vy = 0;
+               //Bounce r1 off the surface
+              //this.bounceOffSurface(r1, s);
+              */
+            }
           } else {
               //The collision is happening on the Y axis
               //But on which side? vx can tell us
@@ -828,6 +846,23 @@ var Bump = (function () {
                 else{
                   r1.x = r1.x - overlapX;
                 }
+              }
+              if (bounce) {
+                if (sprite){
+                  sprite.vx *= -1;
+                }
+                else{
+                  r1.vx *= -1;
+                }
+
+                /*Alternative
+                //Find the bounce surface's vx and vy properties
+                var s = {};
+                s.vx = 0;
+                s.vy = r2.y - r2.y + r2.height;
+                 //Bounce r1 off the surface
+                this.bounceOffSurface(r1, s);
+                */
               }
             }
         } else {
