@@ -213,11 +213,11 @@ var setup = function() {
     'name': 'isaac',
     'x': 1.5,
     'y': 1.5,
-    'speed': 20,
+    'speed': 15,
     acceleration: 400,
     startSpeed: 100,
     'faceDir': 'down',
-    'bulletSpeed': 40,
+    'bulletSpeed': 30,
     'shotSpeed': 200,
     'isShooting': false,
     'projectileOptions': basicProjectile

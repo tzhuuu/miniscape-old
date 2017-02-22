@@ -19,6 +19,8 @@ var Character = function(options) {
   this.bulletSpeed = options.bulletSpeed * Settings.unit || 0;
   this.isShooting = options.isShooting || false;
   this.projectileOptions = options.projectileOptions || {};
+  this.lastvx;
+  this.lastvy;
 
   this.startSpeed = options.startSpeed || 0;  // start speed in milliseconds based off acceleration and speed
   this.startedMoving = 0;   // acceleration start time for interpolation
@@ -90,12 +92,12 @@ Character.prototype.setVelocity = function(presses, latest){
     if (this.stoppedMoving < this.s)
     dir[0] = 0;
     dir[1] = 0;
+    this.stoppedMoving = Math.min(this.acceleration, this.startedMoving);
     this.startedMoving = 0;
-    this.stoppedMoving = this.acceleration;
   }
   else{
     if (!this.startedMoving) {
-      this.startedMoving = this.startSpeed;
+      this.startedMoving = Math.max(this.startSpeed, this.stoppedMoving);
       this.stoppedMoving = 0;
     }
     // 1 = up, 2 = left, 3 = down, 4 = right
@@ -118,6 +120,8 @@ Character.prototype.setVelocity = function(presses, latest){
       dir[0] = 0;
     }
   }
+  this.lastvx = this.vx;
+  this.lastvy = this.vy;
   this.vx = dir[0] * this.speed;
   this.vy = dir[1] * this.speed; // PIXI down is positive
   if (dir[0] * dir[1] != 0){
@@ -162,17 +166,25 @@ Character.prototype.move = function(timeDelta, map){
   // move
 
   var multiplyer = timeDelta / 1000;
+  // start acceleration
   if (this.startedMoving && this.startedMoving < this.acceleration) {
     multiplyer *= this.startedMoving / this.acceleration;
     this.startedMoving += timeDelta;
   }
+
+  // stop deceleration
   if (this.stoppedMoving && this.stoppedMoving > this.startSpeed) {
     multiplyer *= this.stoppedMoving / this.acceleration;
     this.stoppedMoving -= timeDelta;
+    this.x += this.lastvx * multiplyer;
+    this.y += this.lastvy * multiplyer;
+
+  } else {
+    this.x += this.vx * multiplyer;
+    this.y += this.vy * multiplyer;
   }
 
-  this.x += this.vx * multiplyer;
-  this.y += this.vy * multiplyer;
+
 
   // // get list of walls hit
   // var wallsHit = [];
