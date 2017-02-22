@@ -24,7 +24,7 @@ Projectile.prototype.constructor = Projectile;
 Projectile.prototype.move = function() {
   this.x += this.vx;
   this.y += this.vy;
-  this.zOrder = -(this.y + this.height/2 - 5);
+  this.zOrder = -(this.y);
 }
 
 Projectile.prototype.grow = function() {

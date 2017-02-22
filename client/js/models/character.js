@@ -145,41 +145,41 @@ Character.prototype.takeDamage = function(){
 }
 
 Character.prototype.move = function(map){
-  
+
   // move
   this.x += this.vx;
   this.y += this.vy;
 
-  // get list of walls hit
-  var wallsHit = [];
-  bump.hit(this.moveBox, map.wallSprites, false, false, true, function(collision, wall){
-    wallsHit.push({
-      "wall": wall,
-      "pos": wall.toGlobal(new PIXI.Point(wall.width/2, wall.height/2))
-    });
-  });
-
-  // if hit >=1 wall
-  if (wallsHit){
-    var spritePos = this.moveBox.toGlobal(new PIXI.Point(this.moveBox.width/2, this.moveBox.height/2));
-    var _this = this;
-    wallsHit.map(function(wall){
-      var deltaY = spritePos.y - wall.pos.y;
-      var deltaX = spritePos.x - wall.pos.x;
-      var distance = deltaY * deltaY + deltaX * deltaX;
-      wall.distance = distance;
-    });
-
-    // sort walls by distance
-    wallsHit.sort((a,b) => a.distance - b.distance);
+  // // get list of walls hit
+  // var wallsHit = [];
+  // bump.hit(this.moveBox, map.wallSprites, false, false, true, function(collision, wall){
+  //   wallsHit.push({
+  //     "wall": wall,
+  //     "pos": wall.toGlobal(new PIXI.Point(wall.width/2, wall.height/2))
+  //   });
+  // });
+  //
+  // // if hit >=1 wall
+  // if (wallsHit){
+  //   var spritePos = this.moveBox.toGlobal(new PIXI.Point(this.moveBox.width/2, this.moveBox.height/2));
+  //   var _this = this;
+  //   wallsHit.map(function(wall){
+  //     var deltaY = spritePos.y - wall.pos.y;
+  //     var deltaX = spritePos.x - wall.pos.x;
+  //     var distance = deltaY * deltaY + deltaX * deltaX;
+  //     wall.distance = distance;
+  //   });
+  //
+  //   // sort walls by distance
+  //   wallsHit.sort((a,b) => a.distance - b.distance);
 
     // compute collisions
-    for (var i=0; i<wallsHit.length; i++) {
-      var wall = wallsHit[i].wall;
-      var side = bump.customRectangleCollision(this.moveBox, wall, false, true, this);
+    for (var i=0; i<map.wallSprites.length; i++) {
+      bump.customRectangleCollision(this.moveBox, map.wallSprites[i], false, true, this);
     }
 
-  }
+  // }
+  this.zOrder = -(this.y + this.height/2);
 }
 
 Character.prototype.shoot = function(){
